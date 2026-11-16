@@ -2,7 +2,7 @@
 
 Bem-vindo ao repositório da **Oficina de Python**! Este projeto contém o código-fonte do site desenvolvido para apresentar materiais, exercícios e recursos da oficina.
 
-🌐 **Acesse o site online:** [annapoletto-maker.github.io/oficina_python](https://annapoletto-maker.github.io/oficina_python/)
+🌐 **Acesse o site online:** [https://annapoletto-maker.github.io/oficina_python/](https://annapoletto-maker.github.io/oficina_python/))
 
 ---
 
