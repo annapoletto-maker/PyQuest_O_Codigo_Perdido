@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Oficina Python</title>
+<title>Oficina Python · Prática de Programação Estruturada</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=JetBrains+Mono:wght@500&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
 :root{--bg:#e6eef6;--card:#fff;--ink:#15233b;--mute:#58698a;--py:#306998;--yl:#ffd43b;--edbg:#102038;--edtx:#e8f1ff;--err:#c23b3b;--ok:#1f8a4c;--line:#15233b;
@@ -46,11 +46,13 @@ button:focus-visible,textarea:focus-visible{outline:3px solid var(--yl);outline-
 <body>
 <main>
 <h1>Oficina <span>Python</span></h1>
+<p class="sc">Baseada no plano de ensino de Prática de Programação Estruturada (FMP, 2026.2). As missões 1–9 treinam a A1, as 1–14 a A2 e todas a A3.</p>
 <p class="sc" id="sc"></p>
 <div class="nav" id="nav"></div>
-<h2 id="tt"></h2>
+<p class="sc" id="un" style="margin:14px 0 0;font-weight:700"></p>
+<h2 id="tt" style="margin-top:2px"></h2>
 <p id="ds"></p>
-<div class="tip">Em cada teste, a variável <b>n</b> já existe com um valor diferente. Use <b>print()</b> para mostrar a resposta.</div>
+<div class="tip">Os dados chegam pelo <b>input()</b> e cada teste usa valores diferentes. Mostre a resposta com <b>print()</b>. O texto dentro do input() não conta na saída.</div>
 <textarea class="code" id="ed" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Seu código Python"></textarea>
 <div class="chips" id="ch"></div>
 <div class="acts"><button id="rs">Limpar</button><button class="run" id="go">Rodar testes</button></div>
@@ -60,33 +62,63 @@ button:focus-visible,textarea:focus-visible{outline:3px solid var(--yl);outline-
 </main>
 <script>
 function rng(a,b){var r=[];for(var i=a;i<=b;i++)r.push(i);return r}
+var U=["Unidade I · Variáveis, Entrada e Saída de Dados","Unidade II · Operadores Aritméticos, Relacionais e Lógicos","Unidade III · Estrutura de Decisão","Unidade IV · Laço de Repetição (for e while)","Unidade V · Strings, Listas e Matrizes","Unidade VI · Funções"];
+function T(u,t,d,tests,ref,need,sol){return{u:u,t:t,d:d,tests:tests,ref:ref,need:need,sol:sol}}
 var M=[
-{t:"Contagem",d:"Mostre os números de 1 até n, um por linha. Lembre: range(1, n + 1) começa em 1 e para antes de n + 1, então o n entra.",tests:[3,6],ref:function(n){return rng(1,n)},need:"for|while",sol:"for i in range(1, n + 1):\n    print(i)"},
-{t:"Somando tudo",d:"Mostre a soma de 1 até n. Crie uma variável total = 0 antes do laço e, dentro dele, vá somando: total += i.",tests:[5,10,100],ref:function(n){return[n*(n+1)/2]},need:"for|while",start:"total = 0\n",sol:"total = 0\nfor i in range(1, n + 1):\n    total += i\nprint(total)"},
-{t:"Só os pares",d:"Mostre só os números pares de 1 até n. Um número é par quando o resto da divisão por 2 é zero: i % 2 == 0. Use um if dentro do for.",tests:[10,7],ref:function(n){return rng(1,n).filter(function(x){return x%2==0})},need:"if",sol:"for i in range(1, n + 1):\n    if i % 2 == 0:\n        print(i)"},
-{t:"Tabuada",d:"Mostre a tabuada de n de 1 a 10, no formato 3 x 1 = 3. O print aceita vários itens separados por vírgula e coloca um espaço entre eles. Texto fica entre aspas.",tests:[3,7],ref:function(n){return rng(1,10).map(function(i){return n+" x "+i+" = "+n*i})},need:"for",sol:"for i in range(1, 11):\n    print(n, \"x\", i, \"=\", n * i)"},
-{t:"Fatorial",d:"O fatorial de 5 é 5 × 4 × 3 × 2 × 1 = 120. Mostre o fatorial de n. Comece com r = 1 e vá multiplicando: r *= i.",tests:[5,1,6],ref:function(n){var f=1;for(var i=2;i<=n;i++)f*=i;return[f]},need:"for|while",sol:"r = 1\nfor i in range(2, n + 1):\n    r *= i\nprint(r)"},
-{t:"Contagem regressiva",d:"Mostre n, n − 1, … até 1, um por linha, e depois a palavra Fogo! (com aspas no print). Use while e diminua o contador: n -= 1.",tests:[3,5],ref:function(n){return rng(1,n).reverse().concat(["Fogo!"])},need:"while",sol:"while n > 0:\n    print(n)\n    n -= 1\nprint(\"Fogo!\")"},
-{t:"FizzBuzz",d:"De 1 até n: se o número for divisível por 3 e por 5, mostre FizzBuzz; só por 3, Fizz; só por 5, Buzz; senão, o próprio número. Teste primeiro o caso do 3 e 5. Use if, elif e else.",tests:[15,20],ref:function(n){return rng(1,n).map(function(i){return i%15==0?"FizzBuzz":i%3==0?"Fizz":i%5==0?"Buzz":i})},need:"elif",sol:"for i in range(1, n + 1):\n    if i % 15 == 0:\n        print(\"FizzBuzz\")\n    elif i % 3 == 0:\n        print(\"Fizz\")\n    elif i % 5 == 0:\n        print(\"Buzz\")\n    else:\n        print(i)"},
-{t:"Soma dos dígitos",d:"Mostre a soma dos dígitos de n (123 → 1 + 2 + 3 = 6). Dica: n % 10 dá o último dígito e n // 10 remove o último dígito. Repita com while n > 0.",tests:[123,4567],ref:function(n){return[String(n).split("").reduce(function(a,b){return a+ +b},0)]},need:"while",sol:"total = 0\nwhile n > 0:\n    total += n % 10\n    n //= 10\nprint(total)"},
-{t:"Quantos divisores?",d:"Mostre quantos divisores n tem (12 tem 6: 1, 2, 3, 4, 6 e 12). Teste cada d de 1 até n e conte com cont += 1 quando n % d == 0.",tests:[12,7,36],ref:function(n){return[rng(1,n).filter(function(d){return n%d==0}).length]},need:"if",sol:"cont = 0\nfor d in range(1, n + 1):\n    if n % d == 0:\n        cont += 1\nprint(cont)"},
-{t:"Primo ou não?",d:"Mostre primo se n só é divisível por 1 e por ele mesmo; senão, mostre nao primo (sem acento). Atenção: 1 não é primo. Dica: use uma variável que vira False ao achar um divisor entre 2 e n − 1 e, no fim, if/else.",tests:[7,10,13,1,2],ref:function(n){return[n>1&&rng(2,n-1).every(function(d){return n%d})?"primo":"nao primo"]},need:"else",sol:"if n < 2:\n    primo = False\nelse:\n    primo = True\n    for d in range(2, n):\n        if n % d == 0:\n            primo = False\nif primo:\n    print(\"primo\")\nelse:\n    print(\"nao primo\")"}
+T(0,"Olá, mundo","Todo programa começa mostrando algo na tela: a saída de dados. Use print() para mostrar o texto Olá, mundo! (o texto fica entre aspas).",[[]],function(){return["Olá, mundo!"]},"print",'print("Olá, mundo!")'),
+T(0,"Entrada de dados","input() lê o que a pessoa digita e guarda como texto (str). Leia um nome numa variável e mostre Olá, NOME! (ex.: Olá, Ana!). Use + para juntar textos.",[["Ana"],["Carlos"]],function(a){return["Olá, "+a[0]+"!"]},"input",'nome = input("Nome: ")\nprint("Olá, " + nome + "!")'),
+T(0,"Tipagem","O input() sempre devolve str. Leia uma idade e mostre, em 3 linhas: type() dela como veio, type() depois de converter com int(), e a idade do ano que vem (só o número).",[["17"],["30"]],function(a){return["<class 'str'>","<class 'int'>",String(+a[0]+1)]},"int",'idade = input("Idade: ")\nprint(type(idade))\nidade = int(idade)\nprint(type(idade))\nprint(idade + 1)'),
+T(1,"Operadores aritméticos","Leia dois inteiros a e b e mostre, uma por linha: a + b, a - b, a * b, a / b, a // b e a % b. Repare: / dá um float (10 / 5 é 2.0), // é a divisão inteira e % é o resto.",[["7","2"],["10","5"]],function(a){var x=+a[0],y=+a[1];return[x+y,x-y,x*y,pf(x/y),Math.floor(x/y),x%y]},"//",'a = int(input())\nb = int(input())\nprint(a + b)\nprint(a - b)\nprint(a * b)\nprint(a / b)\nprint(a // b)\nprint(a % b)'),
+T(1,"Operadores relacionais","Leia duas notas (float). Mostre a média e, na linha seguinte, True se a média for maior ou igual a 7, senão False. Um print de uma comparação mostra True ou False.",[["8","6.5"],["5","6"]],function(a){var m=(parseFloat(a[0])+parseFloat(a[1]))/2;return[pf(m),m>=7?"True":"False"]},"float",'n1 = float(input())\nn2 = float(input())\nmedia = (n1 + n2) / 2\nprint(media)\nprint(media >= 7)'),
+T(1,"Operadores lógicos","Leia um ano e mostre True se for bissexto, senão False. Bissexto: divisível por 4 e não por 100, ou então divisível por 400. Combine com and, or e not.",[["2024"],["1900"],["2000"],["2023"]],function(a){var y=+a[0];return[(y%4==0&&y%100!=0)||y%400==0?"True":"False"]},"and|or",'ano = int(input())\nprint((ano % 4 == 0 and ano % 100 != 0) or ano % 400 == 0)'),
+T(2,"Par ou ímpar","Leia um inteiro e mostre par ou impar (sem acento). Use if e else, e lembre que um número é par quando n % 2 == 0.",[["4"],["7"],["0"]],function(a){return[a[0]%2==0?"par":"impar"]},"if",'n = int(input())\nif n % 2 == 0:\n    print("par")\nelse:\n    print("impar")'),
+T(2,"Situação do aluno","Leia a média final (float). Se for 7 ou mais, mostre Aprovado; se for 5 ou mais, Recuperacao; senão, Reprovado. Use if, elif e else.",[["8"],["7"],["5.5"],["3"]],function(a){var m=parseFloat(a[0]);return[m>=7?"Aprovado":m>=5?"Recuperacao":"Reprovado"]},"elif",'media = float(input())\nif media >= 7:\n    print("Aprovado")\nelif media >= 5:\n    print("Recuperacao")\nelse:\n    print("Reprovado")'),
+T(2,"Maior de três","Leia três inteiros (um por linha) e mostre o maior, usando só comparações com if/elif/else, sem a função max().",[["3","9","5"],["10","2","7"],["4","4","1"]],function(a){return[Math.max(+a[0],+a[1],+a[2])]},"elif",'a = int(input())\nb = int(input())\nc = int(input())\nif a >= b and a >= c:\n    print(a)\nelif b >= c:\n    print(b)\nelse:\n    print(c)'),
+T(3,"for: contagem","Leia n e mostre os números de 1 até n, um por linha. range(1, n + 1) começa em 1 e para antes de n + 1, então o n entra.",[["3"],["6"]],function(a){return rng(1,+a[0])},"for",'n = int(input())\nfor i in range(1, n + 1):\n    print(i)'),
+T(3,"for: tabuada","Leia n e mostre a tabuada de 1 a 10 no formato 3 x 1 = 3. O print aceita vários itens separados por vírgula e coloca um espaço entre eles.",[["3"],["7"]],function(a){var n=+a[0];return rng(1,10).map(function(i){return n+" x "+i+" = "+n*i})},"for",'n = int(input())\nfor i in range(1, 11):\n    print(n, "x", i, "=", n * i)'),
+T(3,"for: fatorial","O fatorial de 5 é 5 × 4 × 3 × 2 × 1 = 120. Leia n e mostre seu fatorial. Comece com r = 1 e vá multiplicando: r *= i.",[["5"],["1"],["6"]],function(a){var f=1;for(var i=2;i<=+a[0];i++)f*=i;return[f]},"for|while",'n = int(input())\nr = 1\nfor i in range(2, n + 1):\n    r *= i\nprint(r)'),
+T(3,"while: contagem regressiva","Leia n e mostre n, n − 1, … até 1, um por linha, e depois a palavra Fogo! Use while e diminua o contador com n -= 1.",[["3"],["5"]],function(a){return rng(1,+a[0]).reverse().concat(["Fogo!"])},"while",'n = int(input())\nwhile n > 0:\n    print(n)\n    n -= 1\nprint("Fogo!")'),
+T(3,"while: soma dos dígitos","Leia um inteiro e mostre a soma dos seus dígitos (123 → 6). Dica: n % 10 é o último dígito e n // 10 remove o último dígito. Repita enquanto n > 0.",[["123"],["4567"]],function(a){return[a[0].split("").reduce(function(x,y){return x+ +y},0)]},"while",'n = int(input())\ntotal = 0\nwhile n > 0:\n    total += n % 10\n    n //= 10\nprint(total)'),
+T(4,"Strings: vogais","Leia uma palavra e mostre quantas vogais ela tem. Percorra o texto com for letra in palavra: e teste com letra in “aeiou” (só minúsculas: use .lower()).",[["banana"],["python"],["sky"],["AEIOU"]],function(a){return[a[0].toLowerCase().replace(/[^aeiou]/g,"").length]},"for",'palavra = input().lower()\ncont = 0\nfor letra in palavra:\n    if letra in "aeiou":\n        cont += 1\nprint(cont)'),
+T(4,"Listas: soma e maior","Leia 4 inteiros, guarde-os numa lista (nums = [] e nums.append(...)). Mostre a soma e o maior valor; sum() e max() aceitam listas.",[["1","5","3","2"],["10","20","5","15"]],function(a){var n=a.map(Number);return[n.reduce(function(x,y){return x+y}),Math.max.apply(0,n)]},"append",'nums = []\nfor i in range(4):\n    nums.append(int(input()))\nprint(sum(nums))\nprint(max(nums))'),
+T(4,"Listas: ao contrário","Leia 3 palavras numa lista e mostre-as na ordem inversa, uma por linha. O primeiro item é p[0] e o último é p[len(p) - 1]. Dica: range(len(p) - 1, -1, -1) conta de trás para frente.",[["a","b","c"],["sol","lua","mar"]],function(a){return a.slice().reverse()},"len",'p = []\nfor i in range(3):\n    p.append(input())\nfor i in range(len(p) - 1, -1, -1):\n    print(p[i])'),
+T(4,"Matriz: diagonal","Uma matriz é uma lista de listas. Leia 9 inteiros (linha por linha), monte uma matriz 3x3 com append e mostre a soma da diagonal principal: m[0][0] + m[1][1] + m[2][2].",[["1","2","3","4","5","6","7","8","9"],["2","0","0","0","3","0","0","0","4"]],function(a){return[+a[0]+ +a[4]+ +a[8]]},"append",'m = []\nfor i in range(3):\n    linha = []\n    for j in range(3):\n        linha.append(int(input()))\n    m.append(linha)\nsoma = 0\nfor i in range(3):\n    soma += m[i][i]\nprint(soma)'),
+T(5,"Função: dobro","Uma função guarda um trecho de código com nome. Crie def dobro(x): que devolve o dobro de x com return. Depois leia n e mostre dobro(n).",[["4"],["10"]],function(a){return[2*a[0]]},"def",'def dobro(x):\n    return x * 2\nn = int(input())\nprint(dobro(n))'),
+T(5,"Função: número primo","Crie def eh_primo(x): que devolve True ou False (1 não é primo). Leia n e mostre primo ou nao primo (sem acento). Dica: um return dentro do for encerra a função na hora.",[["7"],["10"],["13"],["1"],["2"]],function(a){var n=+a[0];return[n>1&&rng(2,n-1).every(function(d){return n%d})?"primo":"nao primo"]},"def",'def eh_primo(x):\n    if x < 2:\n        return False\n    for d in range(2, x):\n        if x % d == 0:\n            return False\n    return True\nn = int(input())\nif eh_primo(n):\n    print("primo")\nelse:\n    print("nao primo")')
 ];
-var CH=[["for","for i in range(|):\n    "],["while","while |:\n    "],["if","if |:\n    "],["elif","elif |:\n    "],["else","else:\n    "],["print","print(|)"],["break","break"],["+=","+= "],["-=","-= "],["*=","*= "],["//"," // "],["%"," % "],["==","== "],["!="," != "],["and"," and "],["⇥","\t"],["⇤","\b"]];
+var CH=[["input","input(|)"],["print","print(|)"],["int","int(|)"],["for","for i in range(|):\n    "],["while","while |:\n    "],["if","if |:\n    "],["elif","elif |:\n    "],["else","else:\n    "],["def","def |():\n    "],["return","return "],["+=","+= "],["//"," // "],["%"," % "],["=="," == "],["!="," != "],["and"," and "],["or"," or "],["in"," in "],[".append",".append(|)"],["[ ]","[|]"],["⇥","\t"],["⇤","\b"]];
 var A={"=":0,"+=":"+","-=":"-","*=":"*","//=":"//","%=":"%","/=":"/"};
 function E(ln,m){throw{ln:ln,msg:m}}
-function show(v){return v===true?"True":v===false?"False":String(v)}
-var FN={print:function(a,e){if(e.o.length<300)e.o.push(a.map(show).join(" "));return 0},str:function(a){return show(a[0])},int:function(a){return Math.trunc(a[0])},abs:function(a){return Math.abs(a[0])},max:function(a){return Math.max.apply(0,a)},min:function(a){return Math.min.apply(0,a)}};
-function lex(s,ln){var t=[],r=/\s*(?:(\d+(?:\.\d+)?)|([A-Za-z_]\w*)|("[^"]*"|'[^']*')|(\/\/=|\*\*|\/\/|==|!=|<=|>=|[+\-*\/%]=|[-+*\/%()<>=,:]))/y,m,i=0;
+function Fl(v){this.v=v}
+function nm(x){return x instanceof Fl?x.v:x}
+function isn(x){return typeof x==="number"||x instanceof Fl}
+function pf(v){return Number.isInteger(v)?v.toFixed(1):String(v)}
+function rep(v){return typeof v==="string"?"'"+v+"'":show(v)}
+function show(v){return v===true?"True":v===false?"False":v===null?"None":v instanceof Fl?pf(v.v):Array.isArray(v)?"["+v.map(rep).join(", ")+"]":String(v)}
+function lst(a){return a.length===1&&Array.isArray(a[0])?a[0]:a}
+var FN={print:function(a,e){if(e.r.o.length<300)e.r.o.push(a.map(show).join(" "));return null},
+input:function(a,e){var q=e.r.inp;return q.length?String(q.shift()):""},
+str:function(a){return show(a[0])},
+int:function(a,e,ln){var v=a[0];if(typeof v==="string"){if(!/^\s*-?\d+\s*$/.test(v))E(ln,"int() não consegue converter “"+v+"” em número inteiro.");return parseInt(v,10)}return Math.trunc(nm(v))},
+float:function(a,e,ln){var v=a[0];if(typeof v==="string"){if(isNaN(parseFloat(v)))E(ln,"float() não consegue converter “"+v+"” em número.");return new Fl(parseFloat(v))}return new Fl(nm(v))},
+abs:function(a){var v=a[0];return v instanceof Fl?new Fl(Math.abs(v.v)):Math.abs(v)},
+max:function(a){return lst(a).reduce(function(m,x){return nm(x)>nm(m)?x:m})},
+min:function(a){return lst(a).reduce(function(m,x){return nm(x)<nm(m)?x:m})},
+len:function(a){return a[0].length},
+sum:function(a){var s=0,f=0;a[0].forEach(function(x){if(x instanceof Fl)f=1;s+=nm(x)});return f?new Fl(s):s},
+round:function(a){var v=nm(a[0]);if(a.length>1){var p=Math.pow(10,a[1]);return new Fl(Math.round(v*p)/p)}return Math.round(v)},
+type:function(a){var v=a[0];return"<class '"+(v instanceof Fl?"float":typeof v==="number"?"int":typeof v==="boolean"?"bool":typeof v==="string"?"str":"list")+"'>"}};
+function lex(s,ln){var t=[],r=/\s*(?:(\d+(?:\.\d+)?)|([A-Za-z_]\w*)|("[^"]*"|'[^']*')|(\/\/=|\*\*|\/\/|==|!=|<=|>=|[+\-*\/%]=|[-+*\/%()<>=,:.\[\]]))/y,m,i=0;
  while(i<s.length){r.lastIndex=i;m=r.exec(s);if(!m){if(!s.slice(i).trim())break;E(ln,"Não entendi este trecho: "+s.slice(i).trim().slice(0,10))}
-  t.push(m[1]?{k:"n",v:+m[1]}:m[2]?{k:"i",v:m[2]}:m[3]?{k:"s",v:m[3].slice(1,-1)}:{k:"o",v:m[4]});i=r.lastIndex}
+  t.push(m[1]?{k:"n",v:/\./.test(m[1])?new Fl(+m[1]):+m[1]}:m[2]?{k:"i",v:m[2]}:m[3]?{k:"s",v:m[3].slice(1,-1)}:{k:"o",v:m[4]});i=r.lastIndex}
  return t}
 function ar(o,a,b,ln){
- if(o==="+"){if(typeof a!==typeof b)E(ln,"Não dá para somar texto com número. Use str() ou vírgulas no print.");return a+b}
- if(typeof a!=="number"||typeof b!=="number"){if(o==="*"&&typeof a==="string"&&typeof b==="number")return a.repeat(Math.max(0,b));E(ln,"Essa conta só funciona com números.")}
- if(o==="-")return a-b;if(o==="*")return a*b;if(o==="**")return Math.pow(a,b);
- if(!b)E(ln,"Divisão por zero!");
- if(o==="/")return a/b;if(o==="//")return Math.floor(a/b);return((a%b)+b)%b}
+ if(o==="+"){if(typeof a==="string"&&typeof b==="string")return a+b;if(Array.isArray(a)&&Array.isArray(b))return a.concat(b);if(!isn(a)||!isn(b))E(ln,"Não dá para somar texto com número. Converta com int() ou str(), ou use vírgulas no print.")}
+ else if(!isn(a)||!isn(b)){if(o==="*"&&typeof a==="string"&&typeof b==="number")return a.repeat(Math.max(0,b));E(ln,"Essa conta só funciona com números.")}
+ var f=a instanceof Fl||b instanceof Fl||o==="/",x=nm(a),y=nm(b),r;
+ if(o==="+")r=x+y;else if(o==="-")r=x-y;else if(o==="*")r=x*y;else if(o==="**")r=Math.pow(x,y);
+ else{if(!y)E(ln,"Divisão por zero!");r=o==="/"?x/y:o==="//"?Math.floor(x/y):((x%y)+y)%y}
+ return f?new Fl(r):r}
 function cur(P){return P.t[P.i]}
 function op(P,v){var t=P.t[P.i];return !!t&&t.k==="o"&&t.v===v}
 function kw(P,v){var t=P.t[P.i];return !!t&&t.k==="i"&&t.v===v}
@@ -94,21 +126,28 @@ function X(P){return orr(P)}
 function orr(P){var a=andd(P);while(kw(P,"or")){P.i++;a=(function(x,y){return function(e){return x(e)||y(e)}})(a,andd(P))}return a}
 function andd(P){var a=nott(P);while(kw(P,"and")){P.i++;a=(function(x,y){return function(e){return x(e)&&y(e)}})(a,nott(P))}return a}
 function nott(P){if(kw(P,"not")){P.i++;var x=nott(P);return function(e){return !x(e)}}return cmp(P)}
-function cmp(P){var a=bin(P,0),t=cur(P);if(t&&t.k==="o"&&/^(==|!=|<=|>=|<|>)$/.test(t.v)){P.i++;var b=bin(P,0),o=t.v;return function(e){var x=a(e),y=b(e);return o==="=="?x===y:o==="!="?x!==y:o==="<"?x<y:o===">"?x>y:o==="<="?x<=y:x>=y}}return a}
+function cmp(P){var a=bin(P,0),t=cur(P),o;if(t&&t.k==="o"&&/^(==|!=|<=|>=|<|>)$/.test(t.v))o=t.v;else if(kw(P,"in"))o="in";else return a;P.i++;var b=bin(P,0);
+ return function(e){var x=nm(a(e)),y=nm(b(e));return o==="=="?x===y:o==="!="?x!==y:o==="<"?x<y:o===">"?x>y:o==="<="?x<=y:o===">="?x>=y:(typeof y==="string"?y.indexOf(x)>=0:y.some(function(q){return nm(q)===x}))}}
 var LVL=[["+","-"],["*","/","//","%"]];
 function bin(P,l){if(l===2)return un(P);var a=bin(P,l+1);for(;;){var t=cur(P);if(!(t&&t.k==="o"&&LVL[l].indexOf(t.v)>=0))return a;P.i++;a=(function(o,x,y,ln){return function(e){return ar(o,x(e),y(e),ln)}})(t.v,a,bin(P,l+1),P.ln)}}
-function un(P){if(op(P,"-")){P.i++;var x=un(P);return function(e){return -x(e)}}var a=atom(P);if(op(P,"**")){P.i++;var b=un(P),ln=P.ln;return function(e){return ar("**",a(e),b(e),ln)}}return a}
-function atom(P){var t=cur(P),ln=P.ln;if(!t)E(ln,"Faltou algo no fim desta linha.");P.i++;
+function un(P){if(op(P,"-")){P.i++;var x=un(P);return function(e){var v=x(e);return v instanceof Fl?new Fl(-v.v):-v}}var a=atom(P);if(op(P,"**")){P.i++;var b=un(P),ln=P.ln;return function(e){return ar("**",a(e),b(e),ln)}}return a}
+function prim(P){var t=cur(P),ln=P.ln;if(!t)E(ln,"Faltou algo no fim desta linha.");P.i++;
  if(t.k==="n"||t.k==="s")return function(){return t.v};
  if(t.k==="o"&&t.v==="("){var x=X(P);if(!op(P,")"))E(ln,"Faltou fechar o parêntese.");P.i++;return x}
+ if(t.k==="o"&&t.v==="["){var li=[];while(!op(P,"]")){li.push(X(P));if(op(P,","))P.i++;else break}if(!op(P,"]"))E(ln,"Faltou fechar o colchete ].");P.i++;return function(e){return li.map(function(f){return f(e)})}}
  if(t.k==="i"){
   if(t.v==="True")return function(){return true};if(t.v==="False")return function(){return false};
   if(op(P,"(")){P.i++;var args=[];while(!op(P,")")){args.push(X(P));if(op(P,","))P.i++;else break}
-   if(!op(P,")"))E(ln,"Faltou fechar o parêntese.");P.i++;var f=FN[t.v];if(!f)E(ln,"Não conheço a função "+t.v+"().");
-   return function(e){return f(args.map(function(a){return a(e)}),e)}}
-  return function(e){if(!(t.v in e.v))E(ln,"A variável "+t.v+" ainda não existe. Crie-a antes de usar.");return e.v[t.v]}}
+   if(!op(P,")"))E(ln,"Faltou fechar o parêntese.");P.i++;return function(e){var av=args.map(function(a){return a(e)}),u=e.r.f[t.v],f=FN[t.v];if(u){if(av.length!==u.p.length)E(ln,"A função "+t.v+" espera "+u.p.length+" valor(es).");if(++e.r.d>150)E(ln,"Recursão profunda demais.");var sc={v:{},r:e.r};u.p.forEach(function(p,i){sc.v[p]=av[i]});var r=run(u.b,sc);e.r.d--;return r&&r.rv!==undefined?r.rv:null}if(!f)E(ln,"Não conheço a função "+t.v+"().");return f(av,e,ln)}}
+  return function(e){var vs=t.v in e.v?e.v:e.r.v;if(!(t.v in vs))E(ln,"A variável "+t.v+" ainda não existe. Crie-a antes de usar.");return vs[t.v]}}
  E(ln,"Símbolo inesperado: "+t.v)}
-function tick(e,ln){if(++e.n>20000)E(ln,"O programa demorou demais. Será que há um laço infinito?")}
+function atom(P){var a=prim(P);for(;;){var ln=P.ln;
+ if(op(P,"[")){P.i++;var ix=X(P);if(!op(P,"]"))E(ln,"Faltou fechar o colchete ].");P.i++;a=(function(a,ix){return function(e){var q=a(e),i=nm(ix(e));if(typeof q==="string"||Array.isArray(q)){if(i<0)i+=q.length;if(i<0||i>=q.length)E(ln,"Esse índice não existe: passou do tamanho da lista ou do texto.");return q[i]}E(ln,"Só dá para usar [ ] em listas e textos.")}})(a,ix)}
+ else if(op(P,".")){P.i++;var m=cur(P);if(!m||m.k!=="i")E(ln,"Depois do ponto vem o nome de um método.");P.i++;var ar2=[];if(op(P,"(")){P.i++;while(!op(P,")")){ar2.push(X(P));if(op(P,","))P.i++;else break}if(!op(P,")"))E(ln,"Faltou fechar o parêntese.");P.i++}
+  a=(function(a,m,ar2){return function(e){var q=a(e),f=MT[m.v];if(!f)E(ln,"Não conheço o método ."+m.v+"().");return f(q,ar2.map(function(z){return z(e)}),ln)}})(a,m,ar2)}
+ else return a}}
+var MT={upper:function(q){return q.toUpperCase()},lower:function(q){return q.toLowerCase()},count:function(q,a){return typeof q==="string"?q.split(a[0]).length-1:q.filter(function(x){return x===a[0]}).length},append:function(l,a,ln){if(!Array.isArray(l))E(ln,"append só funciona em listas.");l.push(a[0]);return null}};
+function tick(e,ln){if(++e.r.n>20000)E(ln,"O programa demorou demais. Será que há um laço infinito?")}
 function run(b,e){for(var i=0;i<b.length;i++){var r=b[i](e);if(r)return r}}
 function done(P){if(P.i<P.t.length)E(P.ln,"Tem algo a mais no fim desta linha.")}
 function colon(P){if(!op(P,":")||P.i!==P.t.length-1)E(P.ln,"Esta linha precisa terminar com dois-pontos (:).");}
@@ -119,7 +158,7 @@ function compile(src){var it=[],pos=0;
   var t=lex(x.s,x.ln),P={t:t,i:0,ln:x.ln},f=t[0],last=o[o.length-1],ln=x.ln;
   if(kw(P,"for")){P.i++;var nm=cur(P);if(!nm||nm.k!=="i")E(ln,"Depois do for vem o nome da variável, como i.");P.i++;
    if(!kw(P,"in"))E(ln,"Faltou o in. Exemplo: for i in range(5):");P.i++;
-   if(!kw(P,"range"))E(ln,"Aqui use range(...). Exemplo: for i in range(5):");P.i++;
+   if(!kw(P,"range")){var ie=X(P);colon(P);o.push(mkEach(nm.v,ie,sub(ind,x),ln));continue}P.i++;
    if(!op(P,"("))E(ln,"Faltou o parêntese depois de range.");P.i++;
    var ra=[];while(!op(P,")")){ra.push(X(P));if(op(P,","))P.i++;else break}
    if(!op(P,")")||!ra.length||ra.length>3)E(ln,"range precisa de 1 a 3 números entre parênteses.");P.i++;colon(P);
@@ -128,6 +167,8 @@ function compile(src){var it=[],pos=0;
   else if(kw(P,"if")){P.i++;var c2=X(P);colon(P);o.push(mkIf(c2,sub(ind,x),ln))}
   else if(kw(P,"elif")){P.i++;if(!last||!last.arms||last.els)E(ln,"O elif precisa vir logo depois de um if.");var c3=X(P);colon(P);last.arms.push([c3,sub(ind,x)])}
   else if(kw(P,"else")){P.i++;if(!last||!last.arms||last.els)E(ln,"O else precisa vir logo depois de um if.");colon(P);last.els=sub(ind,x)}
+  else if(kw(P,"def")){P.i++;var fn=cur(P);if(!fn||fn.k!=="i")E(ln,"Depois do def vem o nome da função.");P.i++;if(!op(P,"("))E(ln,"Faltou o parêntese depois do nome da função.");P.i++;var ps=[];while(!op(P,")")){var pr=cur(P);if(!pr||pr.k!=="i")E(ln,"Parâmetro inválido.");ps.push(pr.v);P.i++;if(op(P,","))P.i++;else break}if(!op(P,")"))E(ln,"Faltou fechar o parêntese.");P.i++;colon(P);var fb=sub(ind,x);o.push((function(n,p,b){return function(e){e.r.f[n]={p:p,b:b}}})(fn.v,ps,fb))}
+  else if(kw(P,"return")){P.i++;var rx=P.i<P.t.length?X(P):function(){return null};done(P);o.push((function(rx,ln){return function(e){tick(e,ln);return{rv:rx(e)}}})(rx,ln))}
   else if(kw(P,"break")){P.i++;done(P);o.push(function(){return"b"})}
   else if(kw(P,"continue")){P.i++;done(P);o.push(function(){return"c"})}
   else if(f.k==="i"&&t[1]&&t[1].k==="o"&&A.hasOwnProperty(t[1].v)){P.i=2;var rhs=X(P);done(P);o.push(mkSet(f.v,A[t[1].v],rhs,ln))}
@@ -136,39 +177,40 @@ function compile(src){var it=[],pos=0;
  var r=block(0);if(pos<it.length)E(it[pos].ln,"Recuo inesperado nesta linha.");return{prog:r,n:it.length}}
 function mkFor(nm,a,b,ln){return function(e){var v=a.map(function(f){return f(e)}),s=v.length>1?v[0]:0,en=v.length>1?v[1]:v[0],st=v[2]||1;
  if(v.some(function(q){return typeof q!=="number"||q%1}))E(ln,"range só aceita números inteiros.");
- for(var i=s;st>0?i<en:i>en;i+=st){tick(e,ln);e.v[nm]=i;if(run(b,e)==="b")break}}}
-function mkWhile(c,b,ln){return function(e){while(c(e)){tick(e,ln);if(run(b,e)==="b")break}}}
+ for(var i=s;st>0?i<en:i>en;i+=st){tick(e,ln);e.v[nm]=i;var r=run(b,e);if(r==="b")break;if(r&&r!=="c")return r}}}
+function mkEach(nm,ie,b,ln){return function(e){var q=ie(e);if(typeof q!=="string"&&!Array.isArray(q))E(ln,"O for só percorre listas, textos ou range(...).");var l=typeof q==="string"?q.split(""):q.slice();for(var i=0;i<l.length;i++){tick(e,ln);e.v[nm]=l[i];var r=run(b,e);if(r==="b")break;if(r&&r!=="c")return r}}}
+function mkWhile(c,b,ln){return function(e){while(c(e)){tick(e,ln);var r=run(b,e);if(r==="b")break;if(r&&r!=="c")return r}}}
 function mkIf(c,b,ln){var f=function(e){tick(e,ln);for(var i=0;i<f.arms.length;i++)if(f.arms[i][0](e))return run(f.arms[i][1],e);if(f.els)return run(f.els,e)};f.arms=[[c,b]];return f}
 function mkSet(nm,o,rhs,ln){return function(e){tick(e,ln);var r=rhs(e);if(o!==0){if(!(nm in e.v))E(ln,"A variável "+nm+" ainda não existe. Crie-a antes de usar.");r=ar(o,e.v[nm],r,ln)}e.v[nm]=r}}
 var $=function(i){return document.getElementById(i)},cu=0,dn=[],unl=0;
-try{dn=JSON.parse(localStorage.getItem("oficina-py")||"[]")}catch(e){}
+try{dn=JSON.parse(localStorage.getItem("oficina-py2")||"[]")}catch(e){}
 function calcUnl(){unl=0;while(dn.indexOf(unl)>=0)unl++}
 function say(t,c){var m=$("ms");m.textContent=t;m.className="msg "+(c||"")}
-function load(i){cu=i;calcUnl();var L=M[i];$("tt").textContent="Missão "+(i+1)+": "+L.t;$("ds").textContent=L.d;$("ed").value=L.start||"";$("tl").innerHTML="";
+function load(i){cu=i;calcUnl();var L=M[i];$("tt").textContent="Missão "+(i+1)+": "+L.t;$("un").textContent=U[L.u];$("ds").textContent=L.d;$("ed").value=L.start||"";$("tl").innerHTML="";
  $("sc").textContent="🪙 "+dn.length+" de "+M.length+" missões cumpridas";
- var h="";M.forEach(function(_,k){h+='<button class="'+(k===i?"on":dn.indexOf(k)>=0?"dn":"")+'" data-l="'+k+'"'+(k>unl&&dn.indexOf(k)<0?" disabled":"")+'>'+(k+1)+'</button>'});$("nav").innerHTML=h;
+ var h="";M.forEach(function(_,k){h+='<button class="'+(k===i?"on":dn.indexOf(k)>=0?"dn":"")+'" data-l="'+k+'"'+""+'>'+(k+1)+'</button>'});$("nav").innerHTML=h;
  say("Escreva seu código e toque em Rodar testes.")}
 $("ch").innerHTML=CH.map(function(c,i){return'<button data-c="'+i+'">'+c[0]+'</button>'}).join("");
 function insert(i){var ed=$("ed"),v=ed.value,s=ed.selectionStart,ls=v.lastIndexOf("\n",s-1)+1,b=v.slice(ls,s),base=b.match(/^ */)[0],c=CH[i][1];
  if(c==="\t"){ed.setRangeText("    ",ls,ls);ed.selectionStart=ed.selectionEnd=s+4;ed.focus();return}
  if(c==="\b"){var m=v.slice(ls).match(/^ {1,4}/);if(m){ed.setRangeText("",ls,ls+m[0].length);ed.selectionStart=ed.selectionEnd=Math.max(ls,s-m[0].length)}ed.focus();return}
- var t=c.replace(/\n/g,"\n"+base),pre=0;if(/^(for|while|if|elif|else|print|break)/.test(c)&&b.trim())t="\n"+base+t;
+ var t=c.replace(/\n/g,"\n"+base),pre=0;if(/^(for|while|if|elif|else|print|def|return)/.test(c)&&b.trim())t="\n"+base+t;
  var k=t.indexOf("|");if(k>=0)t=t.replace("|","");else k=t.length;
  ed.setRangeText(t,s,ed.selectionEnd,"end");ed.selectionStart=ed.selectionEnd=s+k;ed.focus()}
 $("go").onclick=function(){var L=M[cu],src=$("ed").value,P,rows="",bad=null;$("tl").innerHTML="";
  try{P=compile(src)}catch(e){say("Linha "+e.ln+": "+e.msg,"err");return}
  if(!P.n){say("Escreva pelo menos uma linha de código.","err");return}
  if(!new RegExp("\\b("+L.need+")\\b").test(src.replace(/#.*$/gm,""))){say("Esta missão pede o uso de "+L.need.replace("|"," ou ")+". Tente de novo usando essa ideia.","err");return}
- L.tests.forEach(function(n){var e={v:{n:n},o:[],n:0},ex=L.ref(n).map(show),er=null;
+ L.tests.forEach(function(a){var e={v:{},o:[],n:0,inp:a.slice(),f:{},d:0},ex=L.ref(a).map(show),er=null;e.r=e;
   try{run(P.prog,e)}catch(x){if(!x.msg)throw x;er=x}
   var ok=!er&&e.o.join("\n")===ex.join("\n");if(!ok&&!bad)bad={er:er};
   var cut=function(a){return a.slice(0,6).join(" | ")+(a.length>6?" …":"")};
-  rows+='<div class="tr"><b style="color:var(--'+(ok?"ok":"err")+')">'+(ok?"✓":"✗")+'</b><span>n = '+n+(ok?" → certo":(er?" → erro na linha "+er.ln+": "+er.msg:"<br>esperado: "+cut(ex)+"<br>seu programa: "+(e.o.length?cut(e.o):"(nada)")))+'</span></div>'});
+  rows+='<div class="tr"><b style="color:var(--'+(ok?"ok":"err")+')">'+(ok?"✓":"✗")+'</b><span>entradas: '+(a.length?a.join(", "):"nenhuma")+(ok?" → certo":(er?" → erro na linha "+er.ln+": "+er.msg:"<br>esperado: "+cut(ex)+"<br>seu programa: "+(e.o.length?cut(e.o):"(nada)")))+'</span></div>'});
  $("tl").innerHTML=rows;
- if(!bad){var first=dn.indexOf(cu)<0;if(first){dn.push(cu);try{localStorage.setItem("oficina-py",JSON.stringify(dn))}catch(e){}}calcUnl();
+ if(!bad){var first=dn.indexOf(cu)<0;if(first){dn.push(cu);try{localStorage.setItem("oficina-py2",JSON.stringify(dn))}catch(e){}}calcUnl();
   var nx=cu<M.length-1;say(nx?"Missão cumprida! 🪙 Toque no "+(cu+2)+" para a próxima.":"Você cumpriu todas as missões! Agora você já usa for, while, if/elif/else e contas no Python.","ok");
   $("sc").textContent="🪙 "+dn.length+" de "+M.length+" missões cumpridas";
-  var h="";M.forEach(function(_,k){h+='<button class="'+(k===cu?"on":dn.indexOf(k)>=0?"dn":"")+'" data-l="'+k+'"'+(k>unl&&dn.indexOf(k)<0?" disabled":"")+'>'+(k+1)+'</button>'});$("nav").innerHTML=h}
+  var h="";M.forEach(function(_,k){h+='<button class="'+(k===cu?"on":dn.indexOf(k)>=0?"dn":"")+'" data-l="'+k+'"'+""+'>'+(k+1)+'</button>'});$("nav").innerHTML=h}
  else say("Quase! Veja abaixo o que saiu diferente em cada teste.","err")};
 $("rs").onclick=function(){$("ed").value=M[cu].start||"";$("tl").innerHTML="";say("Código limpo.")};
 $("sol").onclick=function(){$("ed").value=M[cu].sol;say("Esta é uma solução. Leia, entenda cada linha e depois tente escrever a sua.")};
