@@ -10,6 +10,10 @@ Bem-vindo ao repositório da **Oficina de Python**! Este projeto contém o códi
 
 O objetivo deste site é servir como um hub central de conteúdo para a Oficina de Python, facilitando o acesso de estudantes e participantes aos materiais de estudo, documentações e projetos práticos.
 
+## Cadastro de acesso
+
+Seu nome e seus pontos ficam visíveis para a professora. Cada missão cumprida vale 10 pontos.
+
 ---
 
 ## 🛠️ Tecnologias Utilizadas
