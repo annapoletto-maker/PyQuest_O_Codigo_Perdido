@@ -12,8 +12,8 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 :root[data-theme="dark"]{--bg:#0d1523;--card:#16233a;--ink:#e8f0fb;--mute:#9db1cc;--edbg:#0a1220;--err:#ff8c8c;--ok:#6fdc9a;--line:#e8f0fb;color-scheme:dark}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
-main{max-width:620px;margin:0 auto;padding:16px 16px 48px}
+body{margin:0;background-color:var(--bg);background-image:radial-gradient(900px 600px at 85% -5%,color-mix(in srgb,var(--py) 45%,transparent),transparent),radial-gradient(800px 600px at 0% 100%,color-mix(in srgb,var(--py) 30%,transparent),transparent);background-attachment:fixed;color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
+main{max-width:620px;margin:12px auto;padding:16px 16px 48px;border-radius:16px;background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 h1{font:800 1.9rem/1.1 "Bricolage Grotesque",sans-serif;margin:0 0 4px}
 h1 span{background:var(--yl);color:#15233b;padding:0 .15em;border-radius:3px}
 h2{font:800 1.35rem/1.2 "Bricolage Grotesque",sans-serif;margin:16px 0 6px}
@@ -41,12 +41,23 @@ p{margin:0 0 10px}
 .lk{background:none;border:0;color:var(--py);font:inherit;text-decoration:underline;cursor:pointer;padding:0}
 @media (prefers-color-scheme:dark){.lk{color:var(--yl)}}
 button:focus-visible,textarea:focus-visible{outline:3px solid var(--yl);outline-offset:2px}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.ov{position:fixed;inset:0;background:rgba(10,18,32,.75);display:grid;place-items:center;padding:16px;z-index:10}
+[hidden]{display:none!important}
+.bx{background:var(--card);color:var(--ink);border:3px solid var(--line);border-radius:12px;padding:18px;width:100%;max-width:420px}
+.bx input{width:100%;padding:11px;margin:4px 0 12px;border:2px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.bx label{font-weight:700;font-size:.95rem}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{padding:6px 6px;text-align:left;border-bottom:1px dashed var(--mute);white-space:nowrap}
 </style>
 </head>
 <body>
+<canvas id="bg" aria-hidden="true"></canvas>
 <main>
 <h1>Oficina <span>Python</span></h1>
 <p class="sc">Baseada no plano de ensino de Prática de Programação Estruturada (FMP, 2026.2). As missões 1–9 treinam a A1, as 1–14 a A2 e todas a A3.</p>
+<p class="sc" id="me" style="font-weight:700"></p>
 <p class="sc" id="sc"></p>
 <div class="nav" id="nav"></div>
 <p class="sc" id="un" style="margin:14px 0 0;font-weight:700"></p>
@@ -58,8 +69,11 @@ button:focus-visible,textarea:focus-visible{outline:3px solid var(--yl);outline-
 <div class="acts"><button id="rs">Limpar</button><button class="run" id="go">Rodar testes</button></div>
 <div class="msg" id="ms" role="status" aria-live="polite"></div>
 <div id="tl"></div>
-<p class="hint"><button class="lk" id="sol">Travou? Ver uma solução</button></p>
+<p class="hint"><button class="lk" id="sol">Travou? Ver uma solução</button> <button class="lk" id="pb" hidden style="margin-left:12px">Painel do professor</button></p>
+<section id="pn" hidden class="bx" style="max-width:none;margin-top:14px"><h2 style="margin-top:0">Painel do professor</h2><p class="hint" id="pc"></p><div class="wrap"><table id="pt"></table></div><div class="acts" style="margin-top:10px"><button id="pd">Baixar CSV</button></div></section>
 </main>
+<div class="ov" id="reg" hidden><div class="bx" role="dialog" aria-labelledby="rgt"><h2 id="rgt" style="margin-top:0">Cadastro de acesso</h2><p class="hint">Seu nome e seus pontos ficam visíveis para a professora. Cada missão cumprida vale 10 pontos.</p><label for="rn">Nome completo</label><input id="rn" maxlength="60" autocomplete="name"><label for="rt">Turma</label><input id="rt" maxlength="30"><p id="re" style="color:var(--err);min-height:1.4em;margin:0 0 8px"></p><div class="acts"><button id="rk">Agora não</button><button class="run" id="rg">Entrar</button></div></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 function rng(a,b){var r=[];for(var i=a;i<=b;i++)r.push(i);return r}
 var U=["Unidade I · Variáveis, Entrada e Saída de Dados","Unidade II · Operadores Aritméticos, Relacionais e Lógicos","Unidade III · Estrutura de Decisão","Unidade IV · Laço de Repetição (for e while)","Unidade V · Strings, Listas e Matrizes","Unidade VI · Funções"];
@@ -207,7 +221,7 @@ $("go").onclick=function(){var L=M[cu],src=$("ed").value,P,rows="",bad=null;$("t
   var cut=function(a){return a.slice(0,6).join(" | ")+(a.length>6?" …":"")};
   rows+='<div class="tr"><b style="color:var(--'+(ok?"ok":"err")+')">'+(ok?"✓":"✗")+'</b><span>entradas: '+(a.length?a.join(", "):"nenhuma")+(ok?" → certo":(er?" → erro na linha "+er.ln+": "+er.msg:"<br>esperado: "+cut(ex)+"<br>seu programa: "+(e.o.length?cut(e.o):"(nada)")))+'</span></div>'});
  $("tl").innerHTML=rows;
- if(!bad){var first=dn.indexOf(cu)<0;if(first){dn.push(cu);try{localStorage.setItem("oficina-py2",JSON.stringify(dn))}catch(e){}}calcUnl();
+ if(!bad){var first=dn.indexOf(cu)<0;if(first){dn.push(cu);setTimeout(sync,0);try{localStorage.setItem("oficina-py2",JSON.stringify(dn))}catch(e){}}calcUnl();
   var nx=cu<M.length-1;say(nx?"Missão cumprida! 🪙 Toque no "+(cu+2)+" para a próxima.":"Você cumpriu todas as missões! Agora você já usa for, while, if/elif/else e contas no Python.","ok");
   $("sc").textContent="🪙 "+dn.length+" de "+M.length+" missões cumpridas";
   var h="";M.forEach(function(_,k){h+='<button class="'+(k===cu?"on":dn.indexOf(k)>=0?"dn":"")+'" data-l="'+k+'"'+""+'>'+(k+1)+'</button>'});$("nav").innerHTML=h}
@@ -220,6 +234,58 @@ $("ed").onkeydown=function(e){var ed=e.target,v=ed.value,s=ed.selectionStart;
  if(e.key==="Tab"){e.preventDefault();ed.setRangeText("    ",s,ed.selectionEnd,"end")}
  else if(e.key==="Enter"){e.preventDefault();var ln=v.slice(v.lastIndexOf("\n",s-1)+1,s),base=ln.match(/^ */)[0];if(/:\s*$/.test(ln))base+="    ";ed.setRangeText("\n"+base,s,ed.selectionEnd,"end")}};
 calcUnl();load(Math.min(unl,M.length-1));
+var ME=null,PD=null,DBN=null,UNS=null,ROWS=[];
+function pts(){return dn.length*10}
+function hdr(){$("me").textContent=ME?"👤 "+ME.nome+(ME.turma?" · "+ME.turma:"")+" · ⭐ "+pts()+" pontos":"⭐ "+pts()+" pontos"+(PD?"":" (sem cadastro: o progresso fica só neste navegador)")}
+function sync(){hdr();if(!PD||!ME)return;ME.done=dn.slice();ME.pontos=pts();PD.update({done:ME.done,pontos:ME.pontos,ultimo:new Date().toISOString()}).catch(function(){})}
+(async function(){hdr();
+ try{if(!window.claude)return;var u=await claude.use("user"),db=await claude.use("db");if(!u||!db)return;
+  var id=await u.id();if(!id)return;DBN=db;PD=db.doc("players/"+id);
+  var sn=await PD.get(),now=new Date().toISOString();
+  if(sn.exists){ME=Object.assign({},sn.data());(ME.done||[]).forEach(function(k){if(dn.indexOf(k)<0)dn.push(k)});
+   try{localStorage.setItem("oficina-py2",JSON.stringify(dn))}catch(e){}
+   ME.acessos=(ME.acessos||0)+1;ME.ultimo=now;await PD.update({acessos:ME.acessos,ultimo:now,done:dn.slice(),pontos:pts()});
+   calcUnl();load(Math.min(unl,M.length-1));hdr()}
+  else{$("reg").hidden=false}
+  if(await u.canEdit())$("pb").hidden=false}catch(e){hdr()}})();
+$("rg").onclick=async function(){var n=$("rn").value.trim(),t=$("rt").value.trim();if(n.length<3){$("re").textContent="Digite seu nome completo.";return}
+ var now=new Date().toISOString(),d={nome:n,turma:t,done:dn.slice(),pontos:pts(),acessos:1,primeiro:now,ultimo:now};
+ try{await PD.set(d)}catch(e){$("re").textContent="Não foi possível salvar. Peça à professora para convidar você como Colaborador (Contributor) no menu Compartilhar.";return}
+ ME=d;$("reg").hidden=true;hdr()};
+$("rk").onclick=function(){$("reg").hidden=true;PD=null;hdr()};
+function draw(){var t=$("pt");t.textContent="";var h=t.insertRow();["Aluno","Turma","Pontos","Missões","Acessos","Último acesso"].forEach(function(x){var c=document.createElement("th");c.textContent=x;h.appendChild(c)});
+ ROWS.sort(function(a,b){return(b.pontos||0)-(a.pontos||0)});
+ ROWS.forEach(function(r){var tr=t.insertRow();[r.nome,r.turma||"-",r.pontos||0,(r.done||[]).length+"/"+M.length,r.acessos||0,r.ultimo?new Date(r.ultimo).toLocaleString("pt-BR"):"-"].forEach(function(v){tr.insertCell().textContent=v})});
+ $("pc").textContent=ROWS.length+" aluno(s) cadastrado(s). Ordenado por pontos."}
+$("pb").onclick=function(){var p=$("pn");p.hidden=!p.hidden;
+ if(!p.hidden&&!UNS)UNS=DBN.collection("players").onSnapshot(function(sn){ROWS=sn.docs.map(function(d){return Object.assign({id:d.id},d.data())});draw()},function(){$("pc").textContent="Sem permissão para ver os cadastros."})};
+$("pd").onclick=async function(){try{var d=await claude.use("downloads");if(!d)return;var q=function(v){return'"'+String(v).replace(/"/g,'""')+'"'};
+ var c="\ufeffAluno,Turma,Pontos,Missões,Acessos,Primeiro acesso,Último acesso\n"+ROWS.map(function(r){return[r.nome,r.turma||"",r.pontos||0,(r.done||[]).length,r.acessos||0,r.primeiro||"",r.ultimo||""].map(q).join(",")}).join("\n");
+ await d.save({filename:"alunos-oficina-python.csv",data:c})}catch(e){}};
+(function(){try{if(!window.THREE)return;
+var T=THREE,R=new T.WebGLRenderer({canvas:document.getElementById("bg"),alpha:true,antialias:true}),sc=new T.Scene(),cam=new T.PerspectiveCamera(50,1,.1,200),Y=new T.Color(0xffd43b),B=new T.Color(),L=[],N=[],A=[],P=[],tg=new T.Group(),bg=new T.Group(),bi=0,bj=0,cp=[0,0],mx=0,my=0,cur=0,t0=0,t1=0,reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+R.setPixelRatio(Math.min(devicePixelRatio,2));sc.add(tg,bg);
+function pal(){B.set(getComputedStyle(document.documentElement).getPropertyValue("--wall").trim()||"#4f8ec7")}pal();
+matchMedia("(prefers-color-scheme:dark)").addEventListener("change",function(){setTimeout(pal,60)});
+function add(d,x,y,z,sp,par){var m=new T.Mesh(new T.IcosahedronGeometry(.3,0),new T.MeshBasicMaterial({wireframe:true,transparent:true,opacity:.85}));m.position.set(x,y,z);tg.add(m);N.push(m);
+ if(par){var l=new T.Line(new T.BufferGeometry().setFromPoints([par.position.clone(),m.position.clone()]),new T.LineBasicMaterial({transparent:true,opacity:.5}));tg.add(l);L.push(l)}
+ if(d<4){var k=d%2?-1:1;add(d+1,x-sp,y-1.6,z+k*sp*.5,sp/2,m);add(d+1,x+sp,y-1.6,z-k*sp*.5,sp/2,m)}}
+add(0,0,5,0,5,null);
+for(var v=1;v<=12;v++){A.push(v);var b=new T.Mesh(new T.BoxGeometry(.5,1,.5),new T.MeshBasicMaterial({wireframe:true,transparent:true,opacity:.85}));b.scale.y=v*.4;b.position.y=-5+v*.2;bg.add(b);P[v]=b}
+function shuf(){A.sort(function(){return Math.random()-.5});bi=0;bj=0}shuf();
+function step(){if(bi>=11){shuf();return}if(A[bj]>A[bj+1]){var t=A[bj];A[bj]=A[bj+1];A[bj+1]=t}cp=[A[bj],A[bj+1]];bj++;if(bj>=11-bi){bj=0;bi++}}
+var pa=[];for(var i=0;i<160;i++)pa.push((Math.random()-.5)*40,(Math.random()-.5)*22,(Math.random()-.5)*20);
+var pg=new T.BufferGeometry();pg.setAttribute("position",new T.Float32BufferAttribute(pa,3));sc.add(new T.Points(pg,new T.PointsMaterial({color:0xffd43b,size:.07,transparent:true,opacity:.6})));
+function fit(){var w=innerWidth,h=innerHeight,a=w/h,wide=a>1.3;R.setSize(w,h,false);cam.aspect=a;cam.position.z=a<1?34:20;cam.updateProjectionMatrix();tg.position.set(wide?-12:0,wide?0:3,0);bg.position.set(wide?11:0,wide?-1:-6,0);tg.scale.setScalar(wide?.8:.75);bg.scale.setScalar(wide?1.1:.9)}
+addEventListener("pointermove",function(e){mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
+function frame(t){requestAnimationFrame(frame);
+ if(!reduce){tg.rotation.y+=.003;bg.rotation.y=Math.sin(t/4000)*.5;cam.position.x+=(mx*3-cam.position.x)*.03;cam.position.y+=(-my*2-cam.position.y)*.03;if(t-t0>350){t0=t;cur=(cur+1)%N.length}if(t-t1>450){t1=t;step()}}
+ cam.lookAt(0,0,0);
+ N.forEach(function(m,i){m.material.color.copy(i===cur?Y:B);m.scale.setScalar(i===cur?1.9:1)});
+ L.forEach(function(l){l.material.color.copy(B)});
+ for(var v=1;v<=12;v++){var p=P[v],tx=(A.indexOf(v)-5.5)*.8;p.position.x+=(tx-p.position.x)*.15;p.material.color.copy(v===cp[0]||v===cp[1]?Y:B)}
+ R.render(sc,cam)}
+fit();addEventListener("resize",fit);requestAnimationFrame(frame)}catch(e){}})();
 </script>
 </body>
 </html>
