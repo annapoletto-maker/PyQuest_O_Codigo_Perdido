@@ -10,6 +10,10 @@ Bem-vindo ao repositório da **PyQuest: O Código Perdido**! Este projeto conté
 
 O objetivo deste site é servir como um hub central de conteúdo para a PyQuest: O Código Perdido, facilitando o acesso de estudantes e participantes aos materiais de estudo, documentações e projetos práticos.
 
+Baseada no plano de ensino de Prática de Programação Estruturada (FMP, 2026.2). As missões 1–9 treinam a A1, as 1–14 a A2 e todas a A3.
+
+Os dados chegam pelo **input()** e cada teste usa valores diferentes. Mostre a resposta com **print()**. O texto dentro do input() não conta na saída.
+
 ## 🏆 Ranking
 
 Acertos = missões cumpridas. Erros = tentativas que falharam antes de cumprir a missão. Nota = acertos ÷ (acertos + erros) × 10.
