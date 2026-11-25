@@ -6,73 +6,48 @@
 <title>PyQuest: O Código Perdido</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=JetBrains+Mono:wght@500&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
-:root{--bg:#e6eef6;--card:#fff;--ink:#15233b;--mute:#58698a;--py:#306998;--yl:#ffd43b;--edbg:#102038;--edtx:#e8f1ff;--err:#c23b3b;--ok:#1f8a4c;--line:#15233b;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1523;--card:#16233a;--ink:#e8f0fb;--mute:#9db1cc;--edbg:#0a1220;--err:#ff8c8c;--ok:#6fdc9a;--line:#e8f0fb;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0d1523;--card:#16233a;--ink:#e8f0fb;--mute:#9db1cc;--edbg:#0a1220;--err:#ff8c8c;--ok:#6fdc9a;--line:#e8f0fb;color-scheme:dark}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}
-body{margin:0;background-color:var(--bg);background-image:radial-gradient(900px 600px at 85% -5%,color-mix(in srgb,var(--py) 45%,transparent),transparent),radial-gradient(800px 600px at 0% 100%,color-mix(in srgb,var(--py) 30%,transparent),transparent);background-attachment:fixed;color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
-main{width:100%;max-width:none;min-height:100vh;margin:0;padding:clamp(18px,2.5vw,36px) clamp(18px,4vw,64px) 48px;border-radius:0;background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-h1{font:800 1.9rem/1.1 "Bricolage Grotesque",sans-serif;margin:0 0 4px}
-h1 span{background:var(--yl);color:#15233b;padding:0 .15em;border-radius:3px}
-h2{font:800 1.35rem/1.2 "Bricolage Grotesque",sans-serif;margin:16px 0 6px}
-.sc{color:var(--mute);margin:0 0 12px}
-.nav{display:flex;flex-wrap:wrap;gap:6px}
-.nav button{width:40px;height:40px;border-radius:8px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 .95rem "Bricolage Grotesque",sans-serif;cursor:pointer}
-.nav button.on{background:var(--py);color:#fff}
-.nav button.dn{background:var(--yl);color:#15233b}
-.nav button:disabled{opacity:.35;cursor:default}
-p{margin:0 0 10px}
-.tip{background:var(--card);border-left:5px solid var(--yl);padding:8px 12px;border-radius:0 10px 10px 0;font-size:.95rem;margin-bottom:12px}
-.code{width:100%;min-height:190px;background:var(--edbg);color:var(--edtx);border:2px solid var(--line);border-radius:10px;padding:12px;font:500 15px/1.55 "JetBrains Mono",ui-monospace,monospace;resize:vertical;tab-size:4;white-space:pre}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.chips button{background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:8px;padding:6px 10px;font:500 13px "JetBrains Mono",monospace;cursor:pointer}
-.acts{display:flex;gap:8px}
-.acts button{flex:1;padding:13px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 1rem "Bricolage Grotesque",sans-serif;cursor:pointer}
-.acts .run{flex:2;background:var(--yl);color:#15233b}
-.acts button:disabled{opacity:.5;cursor:default}
-.msg{margin:12px 0;padding:10px 12px;border-left:5px solid var(--mute);background:var(--card);border-radius:0 10px 10px 0}
-.msg.err{border-color:var(--err)}
-.msg.ok{border-color:var(--ok)}
-.tr{display:flex;gap:8px;padding:6px 0;border-bottom:1px dashed var(--mute);font:500 14px/1.4 "JetBrains Mono",monospace;word-break:break-word}
-.tr:last-child{border:0}
-.tr b{flex:none}
-.hint{font-size:.95rem;color:var(--mute);margin-top:12px}
-.lk{background:none;border:0;color:var(--py);font:inherit;text-decoration:underline;cursor:pointer;padding:0;margin-right:14px}
-@media (prefers-color-scheme:dark){.lk{color:var(--yl)}}
-button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--yl);outline-offset:2px}
-#bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
-.ov{position:fixed;inset:0;background:rgba(10,18,32,.75);display:grid;place-items:center;padding:16px;z-index:10}
-[hidden]{display:none!important}
-.bx{background:var(--card);color:var(--ink);border:3px solid var(--line);border-radius:12px;padding:18px;width:100%;max-width:420px}
-.bx input{width:100%;padding:11px;margin:4px 0 12px;border:2px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
-.bx label{font-weight:700;font-size:.95rem}
-.wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:.9rem}
-th,td{padding:6px 6px;text-align:left;border-bottom:1px dashed var(--mute);white-space:nowrap}
-tr.me td{font-weight:700;background:color-mix(in srgb,var(--yl) 35%,transparent)}
+:root{--bg:#070d19;--surface:#0d1728;--surface2:#111f35;--ink:#e8f2ff;--mute:#8da5c5;--blue:#1677ff;--cyan:#36cfff;--purple:#8b7cff;--edbg:#050b15;--edtx:#e8f4ff;--err:#ff6b83;--ok:#42e0a1;--line:#203653;--wall:#0c2444;color-scheme:dark;box-sizing:border-box}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:20px}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 80% -15%,#123c72 0,transparent 38%),radial-gradient(ellipse at 5% 85%,#10234a 0,transparent 34%),var(--bg);color:var(--ink);font:15px/1.55 "Atkinson Hyperlegible",system-ui,sans-serif}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:.12}
+main#mn{width:100%;max-width:1600px;min-height:100vh;margin:auto;padding:24px clamp(16px,3vw,48px) 54px;background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 0 18px;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:11px;min-width:0}.brand-mark{width:38px;height:38px;border:1px solid #2e8dff;border-radius:11px;display:grid;place-items:center;color:var(--cyan);font:800 18px "Bricolage Grotesque";background:linear-gradient(145deg,#123a70,#0b1b31);box-shadow:0 0 22px #1677ff30}.brand-name{font:800 19px/1 "Bricolage Grotesque",sans-serif;letter-spacing:.02em}.brand-name span{color:var(--cyan)}.brand-sub{font-size:10px;color:var(--mute);letter-spacing:.16em;text-transform:uppercase;margin-top:5px}.userbar{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}.user-info{color:var(--mute);font-size:13px;text-align:right}.user-info strong{color:var(--ink)}.stat-pill{border:1px solid var(--line);background:#0c192b;border-radius:999px;padding:7px 12px;color:#bcd3f1;font-size:12px;white-space:nowrap}.stat-pill b{color:var(--cyan)}
+h1{font:800 1.9rem/1.1 "Bricolage Grotesque",sans-serif;margin:0}h1 span{color:var(--cyan)}h2{font:800 1.35rem/1.2 "Bricolage Grotesque",sans-serif;margin:0 0 8px}p{margin:0 0 10px}.sc{color:var(--mute);margin:0}
+.progress-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:22px 0 10px}.section-label{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}.nav{display:flex;gap:8px;overflow-x:auto;padding:5px 2px 13px;scrollbar-width:thin;scrollbar-color:#285a91 transparent}.nav button{flex:0 0 42px;width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:#a9c0df;font:700 14px "Bricolage Grotesque",sans-serif;cursor:pointer;transition:.18s}.nav button:hover:not(:disabled){border-color:var(--cyan);color:white;transform:translateY(-2px)}.nav button.on{background:linear-gradient(145deg,#1684ff,#1454bd);border-color:#45caff;color:white;box-shadow:0 0 18px #1677ff55}.nav button.dn{background:#0d3c43;border-color:#1b9d91;color:#70f2d0}.nav button:disabled{opacity:.28;cursor:not-allowed}
+.workspace{display:grid;grid-template-columns:minmax(250px,.78fr) minmax(0,1.55fr);gap:18px;align-items:start;margin-top:8px}.mission-card,.editor-card{background:linear-gradient(155deg,#101e32f2,#0a1424f2);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px #0003}.mission-card{padding:22px;position:sticky;top:18px}.eyebrow{font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--cyan);font-weight:700;margin-bottom:11px}.mission-card h2{font-size:clamp(21px,2.1vw,29px);margin:0 0 10px}.unit{font-size:12px;color:#83a9d4;margin-bottom:14px}.mission-card #ds{color:#c1d2e8;line-height:1.7}.tip{margin-top:18px;background:#0b2541;border:1px solid #174e80;border-left:3px solid var(--cyan);padding:12px 14px;border-radius:10px;color:#c3dafa;font-size:13px}.editor-card{padding:18px}.editor-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.editor-title{font:700 13px "Bricolage Grotesque";letter-spacing:.08em;text-transform:uppercase;color:#b5c9e4}.editor-tag{font:11px "JetBrains Mono",monospace;color:#78bfff;background:#102d4d;padding:5px 9px;border-radius:6px}
+.code{display:block;width:100%;min-height:340px;background:var(--edbg);color:var(--edtx);border:1px solid #24486e;border-radius:12px;padding:18px;font:500 14px/1.7 "JetBrains Mono",ui-monospace,monospace;resize:vertical;tab-size:4;white-space:pre;box-shadow:inset 0 0 30px #06172b}.code:focus{outline:2px solid #1687ff;outline-offset:1px}.chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}.chips button{background:#101f34;color:#a9d4ff;border:1px solid #294867;border-radius:7px;padding:6px 10px;font:500 12px "JetBrains Mono",monospace;cursor:pointer}.chips button:hover{border-color:var(--cyan);color:white}.acts{display:flex;gap:9px}.acts button{padding:11px 16px;border-radius:9px;border:1px solid #315274;background:#14243a;color:#d5e6fa;font:700 14px "Bricolage Grotesque",sans-serif;cursor:pointer}.acts .run{background:linear-gradient(100deg,#147cff,#2360d6);border:1px solid #48baff;color:white;box-shadow:0 0 20px #1677ff35;flex:1.5}.acts button:hover{filter:brightness(1.14)}.acts button:disabled{opacity:.5;cursor:default}.msg{margin:14px 0 8px;padding:11px 13px;border:1px solid var(--line);border-left:3px solid #54708f;background:#0b1728;border-radius:8px;color:#c9dbf2;font-size:13px}.msg.err{border-left-color:var(--err);color:#ffb8c3}.msg.ok{border-left-color:var(--ok);color:#9af4cb}.tr{display:flex;gap:10px;padding:8px 2px;border-bottom:1px solid #1b2d44;font:12px/1.6 "JetBrains Mono",monospace;color:#b7c9df;word-break:break-word}.tr:last-child{border:0}.tr b{flex:none}.hint{font-size:12px;color:var(--mute);margin-top:16px}.utility-nav{display:flex;gap:16px;flex-wrap:wrap;margin-top:15px;padding-top:14px;border-top:1px solid var(--line)}.lk{background:none;border:0;color:#79bfff;font:inherit;cursor:pointer;padding:0}.lk:hover{color:var(--cyan);text-decoration:underline}
+#pn{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:18px!important}#pn h2{color:var(--cyan)}.wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}th{color:#83bfff}tr.me td{font-weight:700;background:#123456}.bx{background:#0d192b;color:var(--ink);border:1px solid #2b527a;border-radius:16px;padding:25px;width:100%;max-width:430px;box-shadow:0 25px 90px #0009}.bx input{width:100%;padding:12px;margin:5px 0 14px;border:1px solid #294867;border-radius:8px;background:#07111f;color:var(--ink);font:inherit}.bx label{font-weight:700;font-size:13px;color:#bdd4ef}.ov{position:fixed;inset:0;background:rgba(2,7,16,.82);backdrop-filter:blur(12px);display:grid;place-items:center;padding:16px;z-index:10}[hidden]{display:none!important}button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+@media(max-width:900px){.workspace{grid-template-columns:1fr}.mission-card{position:static}.code{min-height:300px}.userbar{gap:7px}.user-info{display:none}}
+@media(max-width:560px){main#mn{padding:16px 13px 36px}.topbar{align-items:flex-start}.brand-name{font-size:16px}.brand-mark{width:34px;height:34px}.userbar{max-width:48%}.stat-pill{font-size:10px;padding:6px 8px}.progress-row{margin-top:17px}.mission-card,.editor-card{padding:15px;border-radius:14px}.code{min-height:270px;font-size:12px;padding:13px}.acts button{padding:10px 12px;font-size:12px}.nav button{flex-basis:38px;width:38px;height:38px}.utility-nav{gap:12px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
 <body>
 <canvas id="bg" aria-hidden="true"></canvas>
 <main id="mn" hidden>
-<h1>PyQuest: <span>O Código Perdido</span></h1>
-<p class="sc">Baseada no plano de ensino de Prática de Programação Estruturada (FMP, 2026.2). As missões 1–9 treinam a A1, as 1–14 a A2 e todas a A3.</p>
-<p class="sc" id="me" style="font-weight:700"></p>
-<p class="sc" id="sc"></p>
-<div class="nav" id="nav"></div>
-<p class="sc" id="un" style="margin:14px 0 0;font-weight:700"></p>
-<h2 id="tt" style="margin-top:2px"></h2>
-<p id="ds"></p>
-<div class="tip">Os dados chegam pelo <b>input()</b> e cada teste usa valores diferentes. Mostre a resposta com <b>print()</b>. O texto dentro do input() não conta na saída.</div>
-<textarea class="code" id="ed" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Seu código Python"></textarea>
-<div class="chips" id="ch"></div>
-<div class="acts"><button id="rs">Limpar</button><button class="run" id="go">Rodar testes</button></div>
-<div class="msg" id="ms" role="status" aria-live="polite"></div>
-<div id="tl"></div>
-<p class="hint"><button class="lk" id="sol">Travou? Ver uma solução</button><button class="lk" id="pb">🏆 Ranking</button><button class="lk" id="iv">👥 Convidar amigos</button><button class="lk" id="lo">Sair</button></p>
-<section id="pn" hidden class="bx" style="max-width:none;margin-top:14px"><h2 style="margin-top:0">🏆 Ranking</h2><p class="hint" id="pc"></p><div class="wrap"><table id="pt"></table></div><p class="hint">Acertos = missões cumpridas. Erros = tentativas que falharam antes de cumprir a missão. Nota = acertos ÷ (acertos + erros) × 10.</p><div class="acts" style="margin-top:10px"><button id="pd" hidden>Baixar CSV</button></div></section>
+<header class="topbar">
+  <div class="brand"><div class="brand-mark">P</div><div><div class="brand-name">Py<span>Quest</span></div><div class="brand-sub">O Código Perdido</div></div></div>
+  <div class="userbar"><div class="user-info" id="me"></div><div class="stat-pill" id="sc"></div></div>
+</header>
+<div class="progress-row"><span class="section-label">Sua jornada · 20 missões</span><span class="section-label">Python / RPG</span></div>
+<div class="nav" id="nav" aria-label="Mapa de missões"></div>
+<div class="workspace">
+  <section class="mission-card">
+    <div class="eyebrow" id="un">MISSÃO ATUAL</div>
+    <h2 id="tt"></h2>
+    <p id="ds"></p>
+    <div class="tip">Os dados chegam pelo <b>input()</b> e cada teste usa valores diferentes. Mostre a resposta com <b>print()</b>. O texto dentro do input() não conta na saída.</div>
+  </section>
+  <section class="editor-card">
+    <div class="editor-head"><span class="editor-title">Terminal de código</span><span class="editor-tag">PYTHON 3</span></div>
+    <textarea class="code" id="ed" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Seu código Python"></textarea>
+    <div class="chips" id="ch"></div>
+    <div class="acts"><button id="rs">Limpar</button><button class="run" id="go">▶ &nbsp; Rodar testes</button></div>
+    <div class="msg" id="ms" role="status" aria-live="polite"></div>
+    <div id="tl"></div>
+    <div class="utility-nav"><button class="lk" id="sol">Ver solução</button><button class="lk" id="pb">Ranking</button><button class="lk" id="iv">Convidar amigos</button><button class="lk" id="lo">Sair</button></div>
+  </section>
+</div>
+<section id="pn" hidden><h2>Ranking</h2><p class="hint" id="pc"></p><div class="wrap"><table id="pt"></table></div><p class="hint">Acertos = missões cumpridas. Erros = tentativas que falharam antes de cumprir a missão. Nota = acertos ÷ (acertos + erros) × 10.</p><div class="acts" style="margin-top:10px"><button id="pd" hidden>Baixar CSV</button></div></section>
 </main>
 <div class="ov" id="reg"><div class="bx" role="dialog" aria-labelledby="rgt"><h2 id="rgt" style="margin-top:0">Entrar no PyQuest</h2><p class="hint">Entre com seu nome e senha. Sua conta e seu progresso ficam salvos neste navegador; o ranking é deste aparelho.</p><label for="rn">Nome (usuário)</label><input id="rn" maxlength="40" autocomplete="username"><label for="rp">Senha (mínimo 4 caracteres)</label><input id="rp" type="password" maxlength="60" autocomplete="current-password"><label for="rt">Turma (só ao criar conta)</label><input id="rt" maxlength="30"><p id="re" style="color:var(--err);min-height:1.4em;margin:0 0 8px">Conectando…</p><div class="acts"><button id="rc" disabled>Criar conta</button><button class="run" id="rg" disabled>Entrar</button></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
