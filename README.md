@@ -10,10 +10,12 @@ Bem-vindo ao repositório da **Oficina de Python**! Este projeto contém o códi
 
 O objetivo deste site é servir como um hub central de conteúdo para a PyQuest: O Código Perdido, facilitando o acesso de estudantes e participantes aos materiais de estudo, documentações e projetos práticos.
 
-## Cadastro de acesso
+## Conta e ranking
 
-Seu nome e seus pontos ficam visíveis para a professora. Cada missão cumprida vale 10 pontos.
-
+Para jogar, crie uma conta com nome, senha e turma. O login fica salvo no
+aparelho. Cada missão cumprida vale 10 pontos, e o ranking mostra pontos,
+acertos, erros e nota de todos os jogadores. Use o botão "Convidar amigos"
+para chamar colegas.
 ---
 
 ## 🛠️ Tecnologias Utilizadas
