@@ -31,6 +31,7 @@ p{margin:0 0 10px}
 .acts{display:flex;gap:8px}
 .acts button{flex:1;padding:13px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 1rem "Bricolage Grotesque",sans-serif;cursor:pointer}
 .acts .run{flex:2;background:var(--yl);color:#15233b}
+.acts button:disabled{opacity:.5;cursor:default}
 .msg{margin:12px 0;padding:10px 12px;border-left:5px solid var(--mute);background:var(--card);border-radius:0 10px 10px 0}
 .msg.err{border-color:var(--err)}
 .msg.ok{border-color:var(--ok)}
@@ -38,9 +39,9 @@ p{margin:0 0 10px}
 .tr:last-child{border:0}
 .tr b{flex:none}
 .hint{font-size:.95rem;color:var(--mute);margin-top:12px}
-.lk{background:none;border:0;color:var(--py);font:inherit;text-decoration:underline;cursor:pointer;padding:0}
+.lk{background:none;border:0;color:var(--py);font:inherit;text-decoration:underline;cursor:pointer;padding:0;margin-right:14px}
 @media (prefers-color-scheme:dark){.lk{color:var(--yl)}}
-button:focus-visible,textarea:focus-visible{outline:3px solid var(--yl);outline-offset:2px}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--yl);outline-offset:2px}
 #bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
 .ov{position:fixed;inset:0;background:rgba(10,18,32,.75);display:grid;place-items:center;padding:16px;z-index:10}
 [hidden]{display:none!important}
@@ -50,11 +51,12 @@ button:focus-visible,textarea:focus-visible{outline:3px solid var(--yl);outline-
 .wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:.9rem}
 th,td{padding:6px 6px;text-align:left;border-bottom:1px dashed var(--mute);white-space:nowrap}
+tr.me td{font-weight:700;background:color-mix(in srgb,var(--yl) 35%,transparent)}
 </style>
 </head>
 <body>
 <canvas id="bg" aria-hidden="true"></canvas>
-<main>
+<main id="mn" hidden>
 <h1>PyQuest: <span>O Código Perdido</span></h1>
 <p class="sc">Baseada no plano de ensino de Prática de Programação Estruturada (FMP, 2026.2). As missões 1–9 treinam a A1, as 1–14 a A2 e todas a A3.</p>
 <p class="sc" id="me" style="font-weight:700"></p>
@@ -69,10 +71,10 @@ th,td{padding:6px 6px;text-align:left;border-bottom:1px dashed var(--mute);white
 <div class="acts"><button id="rs">Limpar</button><button class="run" id="go">Rodar testes</button></div>
 <div class="msg" id="ms" role="status" aria-live="polite"></div>
 <div id="tl"></div>
-<p class="hint"><button class="lk" id="sol">Travou? Ver uma solução</button> <button class="lk" id="pb" hidden style="margin-left:12px">Painel do professor</button></p>
-<section id="pn" hidden class="bx" style="max-width:none;margin-top:14px"><h2 style="margin-top:0">Painel do professor</h2><p class="hint" id="pc"></p><div class="wrap"><table id="pt"></table></div><div class="acts" style="margin-top:10px"><button id="pd">Baixar CSV</button></div></section>
+<p class="hint"><button class="lk" id="sol">Travou? Ver uma solução</button><button class="lk" id="pb">🏆 Ranking</button><button class="lk" id="iv">👥 Convidar amigos</button><button class="lk" id="lo">Sair</button></p>
+<section id="pn" hidden class="bx" style="max-width:none;margin-top:14px"><h2 style="margin-top:0">🏆 Ranking</h2><p class="hint" id="pc"></p><div class="wrap"><table id="pt"></table></div><p class="hint">Acertos = missões cumpridas. Erros = tentativas que falharam antes de cumprir a missão. Nota = acertos ÷ (acertos + erros) × 10.</p><div class="acts" style="margin-top:10px"><button id="pd" hidden>Baixar CSV</button></div></section>
 </main>
-<div class="ov" id="reg" hidden><div class="bx" role="dialog" aria-labelledby="rgt"><h2 id="rgt" style="margin-top:0">Cadastro de acesso</h2><p class="hint">Seu nome e seus pontos ficam visíveis para a professora. Cada missão cumprida vale 10 pontos.</p><label for="rn">Nome completo</label><input id="rn" maxlength="60" autocomplete="name"><label for="rt">Turma</label><input id="rt" maxlength="30"><p id="re" style="color:var(--err);min-height:1.4em;margin:0 0 8px"></p><div class="acts"><button id="rk">Agora não</button><button class="run" id="rg">Entrar</button></div></div></div>
+<div class="ov" id="reg"><div class="bx" role="dialog" aria-labelledby="rgt"><h2 id="rgt" style="margin-top:0">Entrar no PyQuest</h2><p class="hint">Entre com seu nome e senha. Seu login fica salvo neste aparelho. Seu nome e seus pontos aparecem no ranking.</p><label for="rn">Nome (usuário)</label><input id="rn" maxlength="40" autocomplete="username"><label for="rp">Senha (mínimo 4 caracteres)</label><input id="rp" type="password" maxlength="60" autocomplete="current-password"><label for="rt">Turma (só ao criar conta)</label><input id="rt" maxlength="30"><p id="re" style="color:var(--err);min-height:1.4em;margin:0 0 8px">Conectando…</p><div class="acts"><button id="rc" disabled>Criar conta</button><button class="run" id="rg" disabled>Entrar</button></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 function rng(a,b){var r=[];for(var i=a;i<=b;i++)r.push(i);return r}
@@ -200,9 +202,9 @@ var $=function(i){return document.getElementById(i)},cu=0,dn=[],unl=0;
 try{dn=JSON.parse(localStorage.getItem("oficina-py2")||"[]")}catch(e){}
 function calcUnl(){unl=0;while(dn.indexOf(unl)>=0)unl++}
 function say(t,c){var m=$("ms");m.textContent=t;m.className="msg "+(c||"")}
+function navDraw(){var h="";M.forEach(function(_,k){h+='<button class="'+(k===cu?"on":dn.indexOf(k)>=0?"dn":"")+'" data-l="'+k+'" '+(k>unl?"disabled":"")+'>'+(k>unl?"🔒 ":"")+(k+1)+'</button>'});$("nav").innerHTML=h}
 function load(i){calcUnl();if(i>unl){say("🔒 Esta missão está bloqueada! Conclua a missão "+(unl+1)+" para desbloqueá-la.","err");return}cu=i;var L=M[i];$("tt").textContent="Missão "+(i+1)+": "+L.t;$("un").textContent=U[L.u];$("ds").textContent=L.d;$("ed").value=L.start||"";$("tl").innerHTML="";
- $("sc").textContent="🪙 "+dn.length+" de "+M.length+" missões cumpridas";
- var h="";M.forEach(function(_,k){h+='<button class="'+(k===i?"on":dn.indexOf(k)>=0?"dn":"")+'" data-l="'+k+'" '+(k>unl?"disabled":"")+'>'+(k>unl?"🔒 ":"")+(k+1)+'</button>'});$("nav").innerHTML=h;
+ $("sc").textContent="🪙 "+dn.length+" de "+M.length+" missões cumpridas";navDraw();
  say("Escreva seu código e toque em Rodar testes.")}
 $("ch").innerHTML=CH.map(function(c,i){return'<button data-c="'+i+'">'+c[0]+'</button>'}).join("");
 function insert(i){var ed=$("ed"),v=ed.value,s=ed.selectionStart,ls=v.lastIndexOf("\n",s-1)+1,b=v.slice(ls,s),base=b.match(/^ */)[0],c=CH[i][1];
@@ -211,21 +213,21 @@ function insert(i){var ed=$("ed"),v=ed.value,s=ed.selectionStart,ls=v.lastIndexO
  var t=c.replace(/\n/g,"\n"+base),pre=0;if(/^(for|while|if|elif|else|print|def|return)/.test(c)&&b.trim())t="\n"+base+t;
  var k=t.indexOf("|");if(k>=0)t=t.replace("|","");else k=t.length;
  ed.setRangeText(t,s,ed.selectionEnd,"end");ed.selectionStart=ed.selectionEnd=s+k;ed.focus()}
+function miss(){if(!ME||dn.indexOf(cu)>=0)return;ME.erros=(ME.erros||0)+1;setTimeout(sync,0)}
 $("go").onclick=function(){var L=M[cu],src=$("ed").value,P,rows="",bad=null;$("tl").innerHTML="";
- try{P=compile(src)}catch(e){say("Linha "+e.ln+": "+e.msg,"err");return}
+ try{P=compile(src)}catch(e){miss();say("Linha "+e.ln+": "+e.msg,"err");return}
  if(!P.n){say("Escreva pelo menos uma linha de código.","err");return}
- if(!new RegExp("\\b("+L.need+")\\b").test(src.replace(/#.*$/gm,""))){say("Esta missão pede o uso de "+L.need.replace("|"," ou ")+". Tente de novo usando essa ideia.","err");return}
+ if(!new RegExp("\\b("+L.need+")\\b").test(src.replace(/#.*$/gm,""))){miss();say("Esta missão pede o uso de "+L.need.replace("|"," ou ")+". Tente de novo usando essa ideia.","err");return}
  L.tests.forEach(function(a){var e={v:{},o:[],n:0,inp:a.slice(),f:{},d:0},ex=L.ref(a).map(show),er=null;e.r=e;
   try{run(P.prog,e)}catch(x){if(!x.msg)throw x;er=x}
   var ok=!er&&e.o.join("\n")===ex.join("\n");if(!ok&&!bad)bad={er:er};
   var cut=function(a){return a.slice(0,6).join(" | ")+(a.length>6?" …":"")};
   rows+='<div class="tr"><b style="color:var(--'+(ok?"ok":"err")+')">'+(ok?"✓":"✗")+'</b><span>entradas: '+(a.length?a.join(", "):"nenhuma")+(ok?" → certo":(er?" → erro na linha "+er.ln+": "+er.msg:"<br>esperado: "+cut(ex)+"<br>seu programa: "+(e.o.length?cut(e.o):"(nada)")))+'</span></div>'});
  $("tl").innerHTML=rows;
- if(!bad){var first=dn.indexOf(cu)<0;if(first){dn.push(cu);setTimeout(sync,0);try{localStorage.setItem("oficina-py2",JSON.stringify(dn))}catch(e){}}calcUnl();
+ if(!bad){var first=dn.indexOf(cu)<0;if(first){if(ME)ME.acertos=(ME.acertos||0)+1;dn.push(cu);setTimeout(sync,0);try{localStorage.setItem("oficina-py2",JSON.stringify(dn))}catch(e){}}calcUnl();
   var nx=cu<M.length-1;say(nx?"Missão cumprida! 🪙 Toque no "+(cu+2)+" para a próxima.":"Você cumpriu todas as missões! Agora você já usa for, while, if/elif/else e contas no Python.","ok");
-  $("sc").textContent="🪙 "+dn.length+" de "+M.length+" missões cumpridas";
-  var h="";M.forEach(function(_,k){h+='<button class="'+(k===cu?"on":dn.indexOf(k)>=0?"dn":"")+'" data-l="'+k+'" '+(k>unl?"disabled":"")+'>'+(k>unl?"🔒 ":"")+(k+1)+'</button>'});$("nav").innerHTML=h}
- else say("Quase! Veja abaixo o que saiu diferente em cada teste.","err")};
+  $("sc").textContent="🪙 "+dn.length+" de "+M.length+" missões cumpridas";navDraw()}
+ else{miss();say("Quase! Veja abaixo o que saiu diferente em cada teste.","err")}};
 $("rs").onclick=function(){$("ed").value=M[cu].start||"";$("tl").innerHTML="";say("Código limpo.")};
 $("sol").onclick=function(){$("ed").value=M[cu].sol;say("Esta é uma solução. Leia, entenda cada linha e depois tente escrever a sua.")};
 $("nav").onclick=function(e){var b=e.target.closest("[data-l]");if(b&&!b.disabled)load(+b.dataset.l)};
@@ -233,35 +235,55 @@ $("ch").onclick=function(e){var b=e.target.closest("[data-c]");if(b)insert(+b.da
 $("ed").onkeydown=function(e){var ed=e.target,v=ed.value,s=ed.selectionStart;
  if(e.key==="Tab"){e.preventDefault();ed.setRangeText("    ",s,ed.selectionEnd,"end")}
  else if(e.key==="Enter"){e.preventDefault();var ln=v.slice(v.lastIndexOf("\n",s-1)+1,s),base=ln.match(/^ */)[0];if(/:\s*$/.test(ln))base+="    ";ed.setRangeText("\n"+base,s,ed.selectionEnd,"end")}};
-calcUnl();load(Math.min(unl,M.length-1));
-var ME=null,PD=null,DBN=null,UNS=null,ROWS=[];
+/* ===== Conta, ranking e convites ===== */
+var ME=null,PD=null,DBN=null,UNS=null,ROWS=[],CK=null,CAN=false;
 function pts(){return dn.length*10}
-function hdr(){$("me").textContent=ME?"👤 "+ME.nome+(ME.turma?" · "+ME.turma:"")+" · ⭐ "+pts()+" pontos":"⭐ "+pts()+" pontos"+(PD?"":" (sem cadastro: o progresso fica só neste navegador)")}
-function sync(){hdr();if(!PD||!ME)return;ME.done=dn.slice();ME.pontos=pts();PD.update({done:ME.done,pontos:ME.pontos,ultimo:new Date().toISOString()}).catch(function(){})}
-(async function(){hdr();
- try{if(!window.claude)return;var u=await claude.use("user"),db=await claude.use("db");if(!u||!db)return;
-  var id=await u.id();if(!id)return;DBN=db;PD=db.doc("players/"+id);
-  var sn=await PD.get(),now=new Date().toISOString();
-  if(sn.exists){ME=Object.assign({},sn.data());(ME.done||[]).forEach(function(k){if(dn.indexOf(k)<0)dn.push(k)});
-   try{localStorage.setItem("oficina-py2",JSON.stringify(dn))}catch(e){}
-   ME.acessos=(ME.acessos||0)+1;ME.ultimo=now;await PD.update({acessos:ME.acessos,ultimo:now,done:dn.slice(),pontos:pts()});
-   calcUnl();load(Math.min(unl,M.length-1));hdr()}
-  else{$("reg").hidden=false}
-  if(await u.canEdit())$("pb").hidden=false}catch(e){hdr()}})();
-$("rg").onclick=async function(){var n=$("rn").value.trim(),t=$("rt").value.trim();if(n.length<3){$("re").textContent="Digite seu nome completo.";return}
- var now=new Date().toISOString(),d={nome:n,turma:t,done:dn.slice(),pontos:pts(),acessos:1,primeiro:now,ultimo:now};
- try{await PD.set(d)}catch(e){$("re").textContent="Não foi possível salvar. Peça à professora para convidar você como Colaborador (Contributor) no menu Compartilhar.";return}
- ME=d;$("reg").hidden=true;hdr()};
-$("rk").onclick=function(){$("reg").hidden=true;PD=null;hdr()};
-function draw(){var t=$("pt");t.textContent="";var h=t.insertRow();["Aluno","Turma","Pontos","Missões","Acessos","Último acesso"].forEach(function(x){var c=document.createElement("th");c.textContent=x;h.appendChild(c)});
- ROWS.sort(function(a,b){return(b.pontos||0)-(a.pontos||0)});
- ROWS.forEach(function(r){var tr=t.insertRow();[r.nome,r.turma||"-",r.pontos||0,(r.done||[]).length+"/"+M.length,r.acessos||0,r.ultimo?new Date(r.ultimo).toLocaleString("pt-BR"):"-"].forEach(function(v){tr.insertCell().textContent=v})});
- $("pc").textContent=ROWS.length+" aluno(s) cadastrado(s). Ordenado por pontos."}
+function nota(r){var t=(r.acertos||0)+(r.erros||0);return t?(10*(r.acertos||0)/t).toFixed(1).replace(".",","):"-"}
+function hdr(){$("me").textContent=ME?"👤 "+ME.nome+(ME.turma?" · "+ME.turma:"")+" · ⭐ "+pts()+" pontos · ✅ "+(ME.acertos||0)+" · ❌ "+(ME.erros||0)+" · nota "+nota(ME):""}
+function sync(){hdr();if(!PD||!ME)return;ME.done=dn.slice();ME.pontos=pts();PD.update({done:ME.done,pontos:ME.pontos,acertos:ME.acertos||0,erros:ME.erros||0,ultimo:new Date().toISOString()}).catch(function(){})}
+function keyOf(n){return n.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"").slice(0,40)}
+async function HS(k,p){var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("pyquest|"+k+"|"+p));return Array.from(new Uint8Array(b)).map(function(x){return("0"+x.toString(16)).slice(-2)}).join("")}
+async function enter(k){PD=DBN.doc("players/"+k);var sn=await PD.get(),now=new Date().toISOString();if(!sn.exists)throw 0;
+ ME=Object.assign({},sn.data());CK=k;dn=(ME.done||[]).slice();try{localStorage.setItem("oficina-py2",JSON.stringify(dn))}catch(e){}
+ ME.acessos=(ME.acessos||0)+1;ME.ultimo=now;PD.update({acessos:ME.acessos,ultimo:now}).catch(function(){});
+ $("reg").hidden=true;$("mn").hidden=false;calcUnl();load(Math.min(unl,M.length-1));hdr()}
+async function auth(create){var n=$("rn").value.trim(),p=$("rp").value,t=$("rt").value.trim(),re=$("re"),k=keyOf(n);re.textContent="";
+ if(n.length<3||k.length<3){re.textContent="Digite seu nome (mínimo 3 letras ou números).";return}
+ if(p.length<4){re.textContent="A senha precisa ter pelo menos 4 caracteres.";return}
+ $("rg").disabled=$("rc").disabled=true;
+ try{var h=await HS(k,p),ac=DBN.doc("accounts/"+k),a=await ac.get(),now=new Date().toISOString();
+  if(create){if(a.exists){re.textContent="Esse nome já está em uso. Escolha outro ou toque em Entrar.";return}
+   await ac.set({h:h,nome:n});await DBN.doc("players/"+k).set({nome:n,turma:t,done:[],pontos:0,acertos:0,erros:0,acessos:0,primeiro:now,ultimo:now})}
+  else{if(!a.exists){re.textContent="Conta não encontrada. Toque em Criar conta.";return}
+   if(a.data().h!==h){re.textContent="Senha incorreta.";return}}
+  try{localStorage.setItem("pyquest-login",JSON.stringify({k:k,h:h}))}catch(e){}
+  $("rp").value="";await enter(k)}
+ catch(e){re.textContent="Não foi possível acessar o servidor. Peça à professora para convidar você como Colaborador (Contributor) no menu Compartilhar."}
+ finally{$("rg").disabled=$("rc").disabled=false}}
+$("rg").onclick=function(){auth(false)};
+$("rc").onclick=function(){auth(true)};
+$("rp").onkeydown=function(e){if(e.key==="Enter")auth(false)};
+$("lo").onclick=function(){try{localStorage.removeItem("pyquest-login");localStorage.removeItem("oficina-py2")}catch(e){}
+ if(UNS){UNS();UNS=null}$("pn").hidden=true;ME=null;PD=null;CK=null;dn=[];$("mn").hidden=true;$("reg").hidden=false;$("re").textContent="";$("rn").value="";$("rp").value=""};
+$("iv").onclick=async function(){var u=location.href,tx="Venha jogar PyQuest comigo e aprender Python! Crie sua conta e entre no ranking:";
+ try{if(navigator.share){await navigator.share({title:"PyQuest",text:tx,url:u});return}await navigator.clipboard.writeText(tx+" "+u);say("Convite copiado! Cole no WhatsApp ou onde quiser. Seu amigo precisa ter acesso ao jogo pelo menu Compartilhar.","ok")}
+ catch(e){say("Para convidar, copie o endereço desta página e envie ao seu amigo.","err")}};
+function draw(){var t=$("pt");t.textContent="";var h=t.insertRow();["#","Aluno","Turma","Pontos","Acertos","Erros","Nota"].forEach(function(x){var c=document.createElement("th");c.textContent=x;h.appendChild(c)});
+ ROWS.sort(function(a,b){return(b.pontos||0)-(a.pontos||0)||(a.erros||0)-(b.erros||0)});
+ ROWS.forEach(function(r,i){var tr=t.insertRow();if(r.id===CK)tr.className="me";[["🥇","🥈","🥉"][i]||i+1,r.nome,r.turma||"-",r.pontos||0,r.acertos||0,r.erros||0,nota(r)].forEach(function(v){tr.insertCell().textContent=v})});
+ $("pc").textContent=ROWS.length+" jogador(es). Ordenado por pontos; em empate, vence quem errou menos."}
 $("pb").onclick=function(){var p=$("pn");p.hidden=!p.hidden;
- if(!p.hidden&&!UNS)UNS=DBN.collection("players").onSnapshot(function(sn){ROWS=sn.docs.map(function(d){return Object.assign({id:d.id},d.data())});draw()},function(){$("pc").textContent="Sem permissão para ver os cadastros."})};
+ if(!p.hidden&&!UNS)UNS=DBN.collection("players").onSnapshot(function(sn){ROWS=sn.docs.map(function(d){return Object.assign({id:d.id},d.data())});draw()},function(){$("pc").textContent="Sem permissão para ver o ranking."})};
 $("pd").onclick=async function(){try{var d=await claude.use("downloads");if(!d)return;var q=function(v){return'"'+String(v).replace(/"/g,'""')+'"'};
- var c="\ufeffAluno,Turma,Pontos,Missões,Acessos,Primeiro acesso,Último acesso\n"+ROWS.map(function(r){return[r.nome,r.turma||"",r.pontos||0,(r.done||[]).length,r.acessos||0,r.primeiro||"",r.ultimo||""].map(q).join(",")}).join("\n");
- await d.save({filename:"alunos-oficina-python.csv",data:c})}catch(e){}};
+ var c="\ufeffAluno,Turma,Pontos,Acertos,Erros,Nota,Acessos,Primeiro acesso,Último acesso\n"+ROWS.map(function(r){return[r.nome,r.turma||"",r.pontos||0,r.acertos||0,r.erros||0,nota(r),r.acessos||0,r.primeiro||"",r.ultimo||""].map(q).join(",")}).join("\n");
+ await d.save({filename:"ranking-pyquest.csv",data:c})}catch(e){}};
+(async function(){var ok=false;
+ try{if(window.claude){var u=await claude.use("user"),db=await claude.use("db");if(u&&db){DBN=db;CAN=await u.canEdit();ok=true}}}catch(e){}
+ if(!ok){$("re").textContent="Não foi possível conectar. Abra o jogo pelo link compartilhado, com a sua conta do Claude.";return}
+ $("re").textContent="";$("rg").disabled=$("rc").disabled=false;if(CAN)$("pd").hidden=false;
+ var sv=null;try{sv=JSON.parse(localStorage.getItem("pyquest-login")||"null")}catch(e){}
+ if(sv&&sv.k){try{var a=await DBN.doc("accounts/"+sv.k).get();if(a.exists&&a.data().h===sv.h){await enter(sv.k);return}}catch(e){}}
+ $("rn").focus()})();
 (function(){try{if(!window.THREE)return;
 var T=THREE,R=new T.WebGLRenderer({canvas:document.getElementById("bg"),alpha:true,antialias:true}),sc=new T.Scene(),cam=new T.PerspectiveCamera(50,1,.1,200),Y=new T.Color(0xffd43b),B=new T.Color(),L=[],N=[],A=[],P=[],tg=new T.Group(),bg=new T.Group(),bi=0,bj=0,cp=[0,0],mx=0,my=0,cur=0,t0=0,t1=0,reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
 R.setPixelRatio(Math.min(devicePixelRatio,2));sc.add(tg,bg);
