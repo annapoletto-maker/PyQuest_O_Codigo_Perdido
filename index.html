@@ -258,7 +258,7 @@ async function auth(create){var n=$("rn").value.trim(),p=$("rp").value,t=$("rt")
    if(a.data().h!==h){re.textContent="Senha incorreta.";return}}
   try{localStorage.setItem("pyquest-login",JSON.stringify({k:k,h:h}))}catch(e){}
   $("rp").value="";await enter(k)}
- catch(e){re.textContent="Não foi possível acessar o servidor. Peça à professora para convidar você como Colaborador (Contributor) no menu Compartilhar."}
+ catch(e){re.textContent="Não foi possível salvar os dados neste navegador. Verifique se o armazenamento local está habilitado e tente novamente."}
  finally{$("rg").disabled=$("rc").disabled=false}}
 $("rg").onclick=function(){auth(false)};
 $("rc").onclick=function(){auth(true)};
@@ -273,11 +273,16 @@ function draw(){var t=$("pt");t.textContent="";var h=t.insertRow();["#","Aluno",
  ROWS.forEach(function(r,i){var tr=t.insertRow();if(r.id===CK)tr.className="me";[["🥇","🥈","🥉"][i]||i+1,r.nome,r.turma||"-",r.pontos||0,r.acertos||0,r.erros||0,nota(r)].forEach(function(v){tr.insertCell().textContent=v})});
  $("pc").textContent=ROWS.length+" jogador(es). Ordenado por pontos; em empate, vence quem errou menos."}
 $("pb").onclick=function(){var p=$("pn");p.hidden=!p.hidden;
- if(!p.hidden&&!UNS)UNS=DBN.collection("players").onSnapshot(function(sn){ROWS=sn.docs.map(function(d){return Object.assign({id:d.id},d.data())});draw()},function(){$("pc").textContent="Sem permissão para ver o ranking."})};
-$("pd").onclick=async function(){try{var d=await claude.use("downloads");if(!d)return;var q=function(v){return'"'+String(v).replace(/"/g,'""')+'"'};
- var c="\ufeffAluno,Turma,Pontos,Acertos,Erros,Nota,Acessos,Primeiro acesso,Último acesso\n"+ROWS.map(function(r){return[r.nome,r.turma||"",r.pontos||0,r.acertos||0,r.erros||0,nota(r),r.acessos||0,r.primeiro||"",r.ultimo||""].map(q).join(",")}).join("\n");
- await d.save({filename:"ranking-pyquest.csv",data:c})}catch(e){}};
-// Banco local: funciona no GitHub Pages sem depender do ambiente Claude.
+ if(!p.hidden){$("pd").hidden=false}if(!p.hidden&&!UNS)UNS=DBN.collection("players").onSnapshot(function(sn){ROWS=sn.docs.map(function(d){return Object.assign({id:d.id},d.data())});draw()},function(){$("pc").textContent="Sem permissão para ver o ranking."})};
+$("pd").onclick=function(){
+ try{
+  var q=function(v){return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'};
+  var c="\ufeffAluno,Turma,Pontos,Acertos,Erros,Nota,Acessos,Primeiro acesso,Último acesso\n"+ROWS.map(function(r){return[r.nome,r.turma||"",r.pontos||0,r.acertos||0,r.erros||0,nota(r),r.acessos||0,r.primeiro||"",r.ultimo||""].map(q).join(",")}).join("\n");
+  var blob=new Blob([c],{type:"text/csv;charset=utf-8;"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="ranking-pyquest.csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ }catch(e){$("pc").textContent="Não foi possível gerar o arquivo CSV neste navegador."}
+};
+// Banco local: funciona diretamente no GitHub Pages.
 function localRead(){try{return JSON.parse(localStorage.getItem("pyquest-db")||"{}")||{}}catch(e){return {}}}
 function localNotify(){var data=localRead();localListeners.slice().forEach(function(fn){fn(data)})}
 function localWrite(data){localStorage.setItem("pyquest-db",JSON.stringify(data));localNotify()}
