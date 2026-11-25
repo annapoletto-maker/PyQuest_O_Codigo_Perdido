@@ -74,7 +74,7 @@ tr.me td{font-weight:700;background:color-mix(in srgb,var(--yl) 35%,transparent)
 <p class="hint"><button class="lk" id="sol">Travou? Ver uma solução</button><button class="lk" id="pb">🏆 Ranking</button><button class="lk" id="iv">👥 Convidar amigos</button><button class="lk" id="lo">Sair</button></p>
 <section id="pn" hidden class="bx" style="max-width:none;margin-top:14px"><h2 style="margin-top:0">🏆 Ranking</h2><p class="hint" id="pc"></p><div class="wrap"><table id="pt"></table></div><p class="hint">Acertos = missões cumpridas. Erros = tentativas que falharam antes de cumprir a missão. Nota = acertos ÷ (acertos + erros) × 10.</p><div class="acts" style="margin-top:10px"><button id="pd" hidden>Baixar CSV</button></div></section>
 </main>
-<div class="ov" id="reg"><div class="bx" role="dialog" aria-labelledby="rgt"><h2 id="rgt" style="margin-top:0">Entrar no PyQuest</h2><p class="hint">Entre com seu nome e senha. Seu login fica salvo neste aparelho. Seu nome e seus pontos aparecem no ranking.</p><label for="rn">Nome (usuário)</label><input id="rn" maxlength="40" autocomplete="username"><label for="rp">Senha (mínimo 4 caracteres)</label><input id="rp" type="password" maxlength="60" autocomplete="current-password"><label for="rt">Turma (só ao criar conta)</label><input id="rt" maxlength="30"><p id="re" style="color:var(--err);min-height:1.4em;margin:0 0 8px">Conectando…</p><div class="acts"><button id="rc" disabled>Criar conta</button><button class="run" id="rg" disabled>Entrar</button></div></div></div>
+<div class="ov" id="reg"><div class="bx" role="dialog" aria-labelledby="rgt"><h2 id="rgt" style="margin-top:0">Entrar no PyQuest</h2><p class="hint">Entre com seu nome e senha. Sua conta e seu progresso ficam salvos neste navegador; o ranking é deste aparelho.</p><label for="rn">Nome (usuário)</label><input id="rn" maxlength="40" autocomplete="username"><label for="rp">Senha (mínimo 4 caracteres)</label><input id="rp" type="password" maxlength="60" autocomplete="current-password"><label for="rt">Turma (só ao criar conta)</label><input id="rt" maxlength="30"><p id="re" style="color:var(--err);min-height:1.4em;margin:0 0 8px">Conectando…</p><div class="acts"><button id="rc" disabled>Criar conta</button><button class="run" id="rg" disabled>Entrar</button></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 function rng(a,b){var r=[];for(var i=a;i<=b;i++)r.push(i);return r}
@@ -200,7 +200,7 @@ function mkIf(c,b,ln){var f=function(e){tick(e,ln);for(var i=0;i<f.arms.length;i
 function mkSet(nm,o,rhs,ln){return function(e){tick(e,ln);var r=rhs(e);if(o!==0){if(!(nm in e.v))E(ln,"A variável "+nm+" ainda não existe. Crie-a antes de usar.");r=ar(o,e.v[nm],r,ln)}e.v[nm]=r}}
 var $=function(i){return document.getElementById(i)},cu=0,dn=[],unl=0;
 try{dn=JSON.parse(localStorage.getItem("oficina-py2")||"[]")}catch(e){}
-function calcUnl(){unl=0;while(dn.indexOf(unl)>=0)unl++}
+function calcUnl(){unl=0;while(dn.indexOf(unl)>=0)unl++;dn=dn.filter(function(k){return k<unl})}
 function say(t,c){var m=$("ms");m.textContent=t;m.className="msg "+(c||"")}
 function navDraw(){var h="";M.forEach(function(_,k){h+='<button class="'+(k===cu?"on":dn.indexOf(k)>=0?"dn":"")+'" data-l="'+k+'" '+(k>unl?"disabled":"")+'>'+(k>unl?"🔒 ":"")+(k+1)+'</button>'});$("nav").innerHTML=h}
 function load(i){calcUnl();if(i>unl){say("🔒 Esta missão está bloqueada! Conclua a missão "+(unl+1)+" para desbloqueá-la.","err");return}cu=i;var L=M[i];$("tt").textContent="Missão "+(i+1)+": "+L.t;$("un").textContent=U[L.u];$("ds").textContent=L.d;$("ed").value=L.start||"";$("tl").innerHTML="";
@@ -277,13 +277,30 @@ $("pb").onclick=function(){var p=$("pn");p.hidden=!p.hidden;
 $("pd").onclick=async function(){try{var d=await claude.use("downloads");if(!d)return;var q=function(v){return'"'+String(v).replace(/"/g,'""')+'"'};
  var c="\ufeffAluno,Turma,Pontos,Acertos,Erros,Nota,Acessos,Primeiro acesso,Último acesso\n"+ROWS.map(function(r){return[r.nome,r.turma||"",r.pontos||0,r.acertos||0,r.erros||0,nota(r),r.acessos||0,r.primeiro||"",r.ultimo||""].map(q).join(",")}).join("\n");
  await d.save({filename:"ranking-pyquest.csv",data:c})}catch(e){}};
-(async function(){var ok=false;
- try{if(window.claude){var u=await claude.use("user"),db=await claude.use("db");if(u&&db){DBN=db;CAN=await u.canEdit();ok=true}}}catch(e){}
- if(!ok){$("re").textContent="Não foi possível conectar. Abra o jogo pelo link compartilhado, com a sua conta do Claude.";return}
- $("re").textContent="";$("rg").disabled=$("rc").disabled=false;if(CAN)$("pd").hidden=false;
+// Banco local: funciona no GitHub Pages sem depender do ambiente Claude.
+function localRead(){try{return JSON.parse(localStorage.getItem("pyquest-db")||"{}")||{}}catch(e){return {}}}
+function localNotify(){var data=localRead();localListeners.slice().forEach(function(fn){fn(data)})}
+function localWrite(data){localStorage.setItem("pyquest-db",JSON.stringify(data));localNotify()}
+var localListeners=[];
+DBN={
+ doc:function(path){return {
+  get:async function(){var d=localRead(),v=d[path];return {exists:!!v,data:function(){return v||{}}}},
+  set:async function(v){var d=localRead();d[path]=Object.assign({},v);localWrite(d)},
+  update:async function(v){var d=localRead();d[path]=Object.assign({},d[path]||{},v);localWrite(d)}
+ }},
+ collection:function(name){return {onSnapshot:function(fn){
+  var send=function(d){var prefix=name+"/",docs=Object.keys(d).filter(function(k){return k.indexOf(prefix)===0}).map(function(k){return {id:k.slice(prefix.length),data:function(){return d[k]}}});fn({docs:docs})};
+  var listener=function(d){send(d)};localListeners.push(listener);send(localRead());
+  return function(){localListeners=localListeners.filter(function(x){return x!==listener})}
+ }}}
+};
+(async function(){
+ $("re").textContent="Conta e ranking salvos neste navegador.";
+ $("rg").disabled=$("rc").disabled=false;
  var sv=null;try{sv=JSON.parse(localStorage.getItem("pyquest-login")||"null")}catch(e){}
  if(sv&&sv.k){try{var a=await DBN.doc("accounts/"+sv.k).get();if(a.exists&&a.data().h===sv.h){await enter(sv.k);return}}catch(e){}}
- $("rn").focus()})();
+ $("rn").focus()
+})();;
 (function(){try{if(!window.THREE)return;
 var T=THREE,R=new T.WebGLRenderer({canvas:document.getElementById("bg"),alpha:true,antialias:true}),sc=new T.Scene(),cam=new T.PerspectiveCamera(50,1,.1,200),Y=new T.Color(0xffd43b),B=new T.Color(),L=[],N=[],A=[],P=[],tg=new T.Group(),bg=new T.Group(),bi=0,bj=0,cp=[0,0],mx=0,my=0,cur=0,t0=0,t1=0,reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
 R.setPixelRatio(Math.min(devicePixelRatio,2));sc.add(tg,bg);
