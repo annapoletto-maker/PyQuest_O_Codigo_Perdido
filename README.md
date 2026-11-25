@@ -1,6 +1,6 @@
 # 🐍 PyQuest: O Código Perdido
 
-Bem-vindo ao repositório da **Oficina de Python**! Este projeto contém o código-fonte do site desenvolvido para apresentar materiais, exercícios e recursos da oficina.
+Bem-vindo ao repositório da **PyQuest: O Código Perdido**! Este projeto contém o código-fonte do site desenvolvido para apresentar materiais, exercícios e recursos da oficina.
 
 🌐 **Acesse o site online:** [https://annapoletto-maker.github.io/PyQuest_O_Codigo_Perdido/](https://annapoletto-maker.github.io/PyQuest_O_Codigo_Perdido/)
 
