@@ -1,4 +1,4 @@
-# 🐍 Oficina de Python
+# 🐍 PyQuest: O Código Perdido
 
 Bem-vindo ao repositório da **Oficina de Python**! Este projeto contém o código-fonte do site desenvolvido para apresentar materiais, exercícios e recursos da oficina.
 
@@ -8,7 +8,7 @@ Bem-vindo ao repositório da **Oficina de Python**! Este projeto contém o códi
 
 ## 📌 Sobre o Projeto
 
-O objetivo deste site é servir como um hub central de conteúdo para a Oficina de Python, facilitando o acesso de estudantes e participantes aos materiais de estudo, documentações e projetos práticos.
+O objetivo deste site é servir como um hub central de conteúdo para a PyQuest: O Código Perdido, facilitando o acesso de estudantes e participantes aos materiais de estudo, documentações e projetos práticos.
 
 ## Cadastro de acesso
 
