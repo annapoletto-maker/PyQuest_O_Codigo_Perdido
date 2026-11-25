@@ -196,7 +196,7 @@ $("go").onclick=function(){var L=M[cu],src=$("ed").value,P,rows="",bad=null;$("t
  if(!new RegExp("\\b("+L.need+")\\b").test(src.replace(/#.*$/gm,""))){miss();say("Esta missão pede o uso de "+L.need.replace("|"," ou ")+". Tente de novo usando essa ideia.","err");return}
  L.tests.forEach(function(a){var e={v:{},o:[],n:0,inp:a.slice(),f:{},d:0},ex=L.ref(a).map(show),er=null;e.r=e;
   try{run(P.prog,e)}catch(x){if(!x.msg)throw x;er=x}
-  var ok=!er&&e.o.join("\n")===ex.join("\n");if(!ok&&!bad)bad={er:er};
+  var norm=function(v){return String(v).normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().trim().replace(/\\s+/g," ")};var ok=!er&&e.o.length===ex.length&&e.o.every(function(v,i){return norm(v)===norm(ex[i])});if(!ok&&!bad)bad={er:er};
   var cut=function(a){return a.slice(0,6).join(" | ")+(a.length>6?" …":"")};
   rows+='<div class="tr"><b style="color:var(--'+(ok?"ok":"err")+')">'+(ok?"✓":"✗")+'</b><span>entradas: '+(a.length?a.join(", "):"nenhuma")+(ok?" → certo":(er?" → erro na linha "+er.ln+": "+er.msg:""))+'<br><span style="color:var(--ok)">resposta correta: '+cut(ex)+'</span>' +(ok?"":'<br>seu programa: '+(e.o.length?cut(e.o):"(nada)"))+'</span></div>'});
  $("tl").innerHTML=rows;
