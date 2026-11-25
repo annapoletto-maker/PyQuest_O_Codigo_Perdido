@@ -13,7 +13,7 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background-color:var(--bg);background-image:radial-gradient(900px 600px at 85% -5%,color-mix(in srgb,var(--py) 45%,transparent),transparent),radial-gradient(800px 600px at 0% 100%,color-mix(in srgb,var(--py) 30%,transparent),transparent);background-attachment:fixed;color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
-main{max-width:620px;margin:12px auto;padding:16px 16px 48px;border-radius:16px;background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+main{width:100%;max-width:none;min-height:100vh;margin:0;padding:clamp(18px,2.5vw,36px) clamp(18px,4vw,64px) 48px;border-radius:0;background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 h1{font:800 1.9rem/1.1 "Bricolage Grotesque",sans-serif;margin:0 0 4px}
 h1 span{background:var(--yl);color:#15233b;padding:0 .15em;border-radius:3px}
 h2{font:800 1.35rem/1.2 "Bricolage Grotesque",sans-serif;margin:16px 0 6px}
@@ -200,9 +200,9 @@ var $=function(i){return document.getElementById(i)},cu=0,dn=[],unl=0;
 try{dn=JSON.parse(localStorage.getItem("oficina-py2")||"[]")}catch(e){}
 function calcUnl(){unl=0;while(dn.indexOf(unl)>=0)unl++}
 function say(t,c){var m=$("ms");m.textContent=t;m.className="msg "+(c||"")}
-function load(i){cu=i;calcUnl();var L=M[i];$("tt").textContent="Missão "+(i+1)+": "+L.t;$("un").textContent=U[L.u];$("ds").textContent=L.d;$("ed").value=L.start||"";$("tl").innerHTML="";
+function load(i){calcUnl();if(i>unl){say("🔒 Esta missão está bloqueada! Conclua a missão "+(unl+1)+" para desbloqueá-la.","err");return}cu=i;var L=M[i];$("tt").textContent="Missão "+(i+1)+": "+L.t;$("un").textContent=U[L.u];$("ds").textContent=L.d;$("ed").value=L.start||"";$("tl").innerHTML="";
  $("sc").textContent="🪙 "+dn.length+" de "+M.length+" missões cumpridas";
- var h="";M.forEach(function(_,k){h+='<button class="'+(k===i?"on":dn.indexOf(k)>=0?"dn":"")+'" data-l="'+k+'"'+""+'>'+(k+1)+'</button>'});$("nav").innerHTML=h;
+ var h="";M.forEach(function(_,k){h+='<button class="'+(k===i?"on":dn.indexOf(k)>=0?"dn":"")+'" data-l="'+k+'" '+(k>unl?"disabled":"")+'>'+(k>unl?"🔒 ":"")+(k+1)+'</button>'});$("nav").innerHTML=h;
  say("Escreva seu código e toque em Rodar testes.")}
 $("ch").innerHTML=CH.map(function(c,i){return'<button data-c="'+i+'">'+c[0]+'</button>'}).join("");
 function insert(i){var ed=$("ed"),v=ed.value,s=ed.selectionStart,ls=v.lastIndexOf("\n",s-1)+1,b=v.slice(ls,s),base=b.match(/^ */)[0],c=CH[i][1];
@@ -224,7 +224,7 @@ $("go").onclick=function(){var L=M[cu],src=$("ed").value,P,rows="",bad=null;$("t
  if(!bad){var first=dn.indexOf(cu)<0;if(first){dn.push(cu);setTimeout(sync,0);try{localStorage.setItem("oficina-py2",JSON.stringify(dn))}catch(e){}}calcUnl();
   var nx=cu<M.length-1;say(nx?"Missão cumprida! 🪙 Toque no "+(cu+2)+" para a próxima.":"Você cumpriu todas as missões! Agora você já usa for, while, if/elif/else e contas no Python.","ok");
   $("sc").textContent="🪙 "+dn.length+" de "+M.length+" missões cumpridas";
-  var h="";M.forEach(function(_,k){h+='<button class="'+(k===cu?"on":dn.indexOf(k)>=0?"dn":"")+'" data-l="'+k+'"'+""+'>'+(k+1)+'</button>'});$("nav").innerHTML=h}
+  var h="";M.forEach(function(_,k){h+='<button class="'+(k===cu?"on":dn.indexOf(k)>=0?"dn":"")+'" data-l="'+k+'" '+(k>unl?"disabled":"")+'>'+(k>unl?"🔒 ":"")+(k+1)+'</button>'});$("nav").innerHTML=h}
  else say("Quase! Veja abaixo o que saiu diferente em cada teste.","err")};
 $("rs").onclick=function(){$("ed").value=M[cu].start||"";$("tl").innerHTML="";say("Código limpo.")};
 $("sol").onclick=function(){$("ed").value=M[cu].sol;say("Esta é uma solução. Leia, entenda cada linha e depois tente escrever a sua.")};
